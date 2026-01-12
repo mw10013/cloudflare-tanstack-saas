@@ -1,0 +1,58 @@
+/**
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ctss-local",
+  "compatibility_date": "2025-09-02",
+  "compatibility_flags": ["nodejs_compat"],
+  "account_id": "1422451be59cc2401532ad67d92ae773",
+  "main": "./src/worker.ts",
+  "vars": {
+    "ENVIRONMENT": "local",
+    "DEMO_MODE": "true",
+    "TRANSACTIONAL_EMAIL": "noreply@example.com",
+    "BETTER_AUTH_URL": "http://localhost:3000"
+  },
+  "observability": {
+    "enabled": true
+  },
+  "d1_databases": [
+    {
+      "binding": "D1",
+      "database_name": "d1-local",
+      "database_id": "d1-local"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "KV",
+      "id": "kv-local"
+    }
+  ],
+  "env": {
+    "production": {
+      "name": "ctss",
+      "vars": {
+        "ENVIRONMENT": "production",
+        "DEMO_MODE": "false",
+        "TRANSACTIONAL_EMAIL": "noreply@example.com",
+        "BETTER_AUTH_URL": "https://cloudflare-tanstack-saas.workers.dev"
+      },
+      "d1_databases": [
+        {
+          "binding": "D1",
+          "database_name": "cloudflare-tanstack-saas-d1-production",
+          "database_id": ""
+        }
+      ],
+      "kv_namespaces": [
+        {
+          "binding": "KV",
+          "id": ""
+        }
+      ]
+    }
+  }
+}
