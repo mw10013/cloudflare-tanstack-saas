@@ -45,7 +45,7 @@ function Header() {
         <div className="flex items-center gap-12">
           <a href="/" className="flex items-center gap-1">
             <AppLogoIcon className="size-6 fill-current" />
-            <span className="text-xl font-extrabold">TSS3</span>
+            <span className="text-xl font-extrabold">CTSS</span>
             <span className="bg-primary relative top-1 size-1.5" />
           </a>
           <div className="hidden items-center gap-6 md:flex">
@@ -113,7 +113,7 @@ export function Footer() {
         <div className="max-w-md space-y-4 md:col-span-2 lg:col-span-4">
           <a href="/" className="flex items-center gap-1">
             <AppLogoIcon className="size-6 fill-current" />
-            <span className="text-xl font-extrabold">TSS3</span>
+            <span className="text-xl font-extrabold">CTSS</span>
             <span className="bg-primary relative top-1 size-1.5" />
           </a>
           <p className="text-muted-foreground text-sm">
@@ -167,7 +167,7 @@ export function Footer() {
       </div>
       <div className="border-border/40 flex flex-col items-center justify-between gap-4 border-t border-dashed pt-8 sm:flex-row">
         <p className="text-muted-foreground text-sm">
-          © 2025 TSS3. Built with ♥ by{" "}
+          © 2025 CTSS. Built with ♥ by{" "}
           <a
             href="https://github.com/mw10013"
             target="_blank"
