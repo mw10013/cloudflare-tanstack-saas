@@ -38,7 +38,7 @@
         "ENVIRONMENT": "production",
         "DEMO_MODE": "true",
         "TRANSACTIONAL_EMAIL": "noreply@example.com",
-        "BETTER_AUTH_URL": "https://ctss.workers.dev"
+        "BETTER_AUTH_URL": "https://ctss.devxo.workers.dev"
       },
       "d1_databases": [
         {
