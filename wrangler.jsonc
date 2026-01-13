@@ -36,21 +36,21 @@
       "name": "ctss",
       "vars": {
         "ENVIRONMENT": "production",
-        "DEMO_MODE": "false",
+        "DEMO_MODE": "true",
         "TRANSACTIONAL_EMAIL": "noreply@example.com",
-        "BETTER_AUTH_URL": "https://cloudflare-tanstack-saas.workers.dev"
+        "BETTER_AUTH_URL": "https://ctss.workers.dev"
       },
       "d1_databases": [
         {
           "binding": "D1",
-          "database_name": "cloudflare-tanstack-saas-d1-production",
-          "database_id": ""
+          "database_name": "ctss-d1-production",
+          "database_id": "35f98619-2c02-4e34-80cc-e72bf0d77c03"
         }
       ],
       "kv_namespaces": [
         {
           "binding": "KV",
-          "id": ""
+          "id": "8c068c6fcca946b59f364990b3687aaa"
         }
       ]
     }

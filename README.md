@@ -53,7 +53,7 @@ pnpm test:e2e
 ## Deploy
 
 - pnpm exec wrangler kv namespace create ctss-kv-production
-- Update wrangler.jsonc production kv_namespaces and queues
+- Update wrangler.jsonc production kv_namespaces
 - pnpm d1:reset:PRODUCTION
 - pnpm deploy:PRODUCTION
 - pnpm exec wrangler secret put SECRET --env production
@@ -61,7 +61,7 @@ pnpm test:e2e
   - Git repository: connect to git repo
   - Build configuration
     - Build command: CLOUDFLARE_ENV=production pnpm build
-    - Deploy command: pnpm exec wrangler deploy
+    - Deploy command: pnpm exec wrangler deploy --env production
 - Storage & databases: ctss-d1-production: Settings
   - Enable read replication
 
