@@ -56,7 +56,7 @@ function Header() {
               Pricing
             </Link>
             <a
-              href="https://github.com/mw10013/tanstack-sandbox3"
+              href="https://github.com/mw10013/cloudflare-tanstack-saas"
               target="_blank"
               rel="noopener noreferrer"
               className="data-hovered:text-primary text-muted-foreground font-medium"
@@ -93,7 +93,7 @@ function GitHubRepoLink({ className }: { className?: string }) {
       aria-label="GitHub repo"
       render={
         <a
-          href="https://github.com/mw10013/tanstack-sandbox3"
+          href="https://github.com/mw10013/cloudflare-tanstack-saas"
           target="_blank"
           rel="noopener noreferrer"
         />
@@ -154,7 +154,7 @@ export function Footer() {
           <ul className="space-y-2 text-sm">
             <li>
               <a
-                href="https://github.com/mw10013/tanstack-sandbox3"
+                href="https://github.com/mw10013/cloudflare-tanstack-saas"
                 className="text-muted-foreground data-hovered:text-foreground transition-colors"
                 target="_blank"
                 rel="noopener noreferrer"

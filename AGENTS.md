@@ -6,7 +6,7 @@
 
 ## Project
 
-- `tanstack-sandbox3` is a TanStack Start application with shadcn/ui components (Base UI variant), TypeScript, Tailwind CSS v4, and Cloudflare Workers deployment.
+- `cloudflare-tanstack-saas` is a TanStack Start application with shadcn/ui components (Base UI variant), TypeScript, Tailwind CSS v4, and Cloudflare Workers deployment.
 - Route modules are in `src/routes/` and use file route conventions.
 - **Refs**: Downloaded source code of libraries are in `refs/` for reference.
   - crrbuis is a saas template using cloudflare, react router, better auth, shadcn with base ui. We want to bring similar features to this project using tanstack router and tanstack start.
