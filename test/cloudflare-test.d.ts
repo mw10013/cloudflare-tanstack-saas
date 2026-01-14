@@ -1,6 +1,8 @@
 declare module "cloudflare:test" {
   interface ProvidedEnv extends Env {
     TEST_MIGRATIONS: D1Migration[];
+    D1: D1Database;
+    KV: KVNamespace;
   }
 
   export const env: ProvidedEnv;
