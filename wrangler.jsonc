@@ -5,7 +5,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "ctss-local",
-  "compatibility_date": "2026-01-13",
+  "compatibility_date": "2025-09-17",
   "compatibility_flags": ["nodejs_compat"],
   "account_id": "1422451be59cc2401532ad67d92ae773",
   "main": "./src/worker.ts",
