@@ -10,3 +10,20 @@ export async function resetDb(resetFn?: (db: D1Database) => Promise<void>) {
   ]);
   if (resetFn) await resetFn(env.D1);
 }
+
+export function extractSessionCookie(response: Response): string {
+  const setCookieHeader = response.headers.get("Set-Cookie");
+  if (!setCookieHeader) throw new Error("Expected Set-Cookie header");
+  const match = setCookieHeader.match(/better-auth\.session_token=([^;]+)/);
+  if (!match) throw new Error(`Missing session cookie: ${setCookieHeader}`);
+  return `better-auth.session_token=${match[1]}`;
+}
+
+export function parseSetCookie(cookieHeader: string): Record<string, string> {
+  return Object.fromEntries(
+    cookieHeader.split(";").map((cookie) => {
+      const [key, value] = cookie.trim().split("=");
+      return [key, value];
+    }),
+  );
+}
