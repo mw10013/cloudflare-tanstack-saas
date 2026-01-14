@@ -29,10 +29,7 @@ export default defineWorkersProject(async () => {
     },
     test: {
       include: ["test/integration/*.test.ts"],
-      setupFiles: [
-        "test/apply-migrations.ts",
-        "test/integration/handled-rejections.ts",
-      ],
+      setupFiles: ["test/apply-migrations.ts"],
       poolOptions: {
         workers: {
           main: path.resolve(__dirname, "../../dist/server/index.js"),

@@ -40,6 +40,12 @@ curl "http://localhost:5173/cdn-cgi/handler/scheduled?cron=0%200%20*%20*%20*"
 
 ```
 pnpm test
+pnpm vitest --config test/integration/vitest.config.ts run test/integration/auth.test.ts
+pnpm vitest --config test/integration/vitest.config.ts run --include test/integration/auth.test.ts
+pnpm vitest --config test/integration/vitest.config.ts run test/integration/auth.test.ts -t "sends magic link and writes it to KV"
+pnpm vitest --config test/integration/vitest.config.ts run test/integration/auth.test.ts -t "verifies magic link and creates a session"
+pnpm vitest --config test/integration/vitest.config.ts run test/integration/auth.test.ts -t "redirects /magic-link based on user role"
+pnpm vitest --config test/integration/vitest.config.ts run test/integration/auth.test.ts -t "signs out (endpoint reachable)"
 ```
 
 ### E2E Tests
