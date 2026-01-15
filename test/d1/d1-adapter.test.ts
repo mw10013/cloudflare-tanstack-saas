@@ -1,13 +1,13 @@
-import { d1Adapter } from "@/lib/d1-adapter";
 import {
   runAdapterTest,
   runNumberIdAdapterTest,
 } from "better-auth/adapters/test";
 import { env } from "cloudflare:test";
 import { beforeAll, describe } from "vitest";
+import { d1Adapter } from "@/lib/d1-adapter";
 import { resetDb } from "../test-utils";
 
-describe("better-auth d1Adapter", async () => {
+describe("better-auth d1Adapter", () => {
   beforeAll(async () => {
     await resetDb(async (db) => {
       await db.batch([
@@ -20,7 +20,7 @@ describe("better-auth d1Adapter", async () => {
     });
   });
 
-  await runAdapterTest({
+  runAdapterTest({
     getAdapter: (options = {}) => {
       return Promise.resolve(d1Adapter(env.D1.withSession())(options));
     },
@@ -52,7 +52,7 @@ describe("better-auth d1Adapter", async () => {
   });
 });
 
-describe("better-auth d1Adapter (number id)", async () => {
+describe("better-auth d1Adapter (number id)", () => {
   beforeAll(async () => {
     await resetDb(async (db) => {
       await db.batch([
@@ -65,7 +65,7 @@ describe("better-auth d1Adapter (number id)", async () => {
     });
   });
 
-  await runNumberIdAdapterTest({
+  runNumberIdAdapterTest({
     getAdapter: async (options = {}) => {
       return Promise.resolve(d1Adapter(env.D1.withSession())(options));
     },

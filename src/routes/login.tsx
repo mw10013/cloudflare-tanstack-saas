@@ -44,6 +44,7 @@ export const login = createServerFn({
       throw new Error("Failed to send magic link. Please try again.");
     }
     const magicLink =
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       env.DEMO_MODE === "true"
         ? ((await env.KV.get(`demo:magicLink`)) ?? undefined)
         : undefined;

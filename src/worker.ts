@@ -33,6 +33,7 @@ export default {
       kv: env.KV,
       baseURL: env.BETTER_AUTH_URL,
       secret: env.BETTER_AUTH_SECRET,
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       demoMode: env.DEMO_MODE === "true",
       transactionalEmail: env.TRANSACTIONAL_EMAIL,
       stripeWebhookSecret: env.STRIPE_WEBHOOK_SECRET,

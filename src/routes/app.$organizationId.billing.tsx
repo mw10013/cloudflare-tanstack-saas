@@ -35,16 +35,14 @@ const getLoaderData = createServerFn({ method: "GET" })
     const activeSubscription = subscriptions.find(
       (v) => v.status === "active" || v.status === "trialing",
     );
-    const safeSubscription = activeSubscription && {
-      ...activeSubscription,
-      limits: activeSubscription.limits
-        ? Object.fromEntries(
-            Object.entries(activeSubscription.limits).map(([k]) => [k, {}]),
-          )
+
+    return {
+      // `limits` is typed as `Record<string, unknown>` in better-auth's stripe plugin.
+      // TanStack Start server function results must be serializable (no `unknown`), so we omit it.
+      activeSubscription: activeSubscription
+        ? (({ limits: _limits, ...rest }) => rest)(activeSubscription)
         : undefined,
     };
-
-    return { activeSubscription: safeSubscription };
   });
 
 function RouteComponent() {

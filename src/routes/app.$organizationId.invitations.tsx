@@ -156,7 +156,7 @@ const invite = createServerFn({ method: "POST" })
         // Occurs when a pending invitation exists and a new invitation is created with a different role.
         if (result.role !== role) {
           console.log(
-            `Applying workaround for better-auth createInvitation role bug: expected role ${role}, got ${String(result.role)} for invitation ${String(result.id)}`,
+            `Applying workaround for better-auth createInvitation role bug: expected role ${role}, got ${result.role} for invitation ${result.id}`,
           );
           await repository.updateInvitationRole({
             invitationId: Number(result.id),
