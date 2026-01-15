@@ -103,6 +103,7 @@ create table Invitation (
   organizationId integer not null references Organization (organizationId) on delete cascade,
   role text not null references MemberRole (memberRoleId),
   status text not null references InvitationStatus (invitationStatusId),
+  createdAt text not null,
   expiresAt text not null
 );
 
