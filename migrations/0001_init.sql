@@ -74,7 +74,9 @@ create table Organization (
   slug text not null unique,
   logo text,
   metadata text,
-  createdAt text not null default (datetime('now'))
+  stripeCustomerId text unique,
+  createdAt text not null default (datetime('now')),
+  updatedAt text
 );
 
 --> statement-breakpoint
@@ -158,10 +160,13 @@ create table Subscription (
   status text not null,
   periodStart text,
   periodEnd text,
-  cancelAtPeriodEnd integer,
-  seats integer,
   trialStart text,
-  trialEnd text
+  trialEnd text,
+  cancelAtPeriodEnd integer,
+  cancelAt text,
+  canceledAt text,
+  endedAt text,
+  seats integer
 );
 
 --> statement-breakpoint
