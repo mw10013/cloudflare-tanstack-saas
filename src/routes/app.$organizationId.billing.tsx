@@ -8,6 +8,7 @@ import {
 import { createServerFn, useServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import { AlertCircle } from "lucide-react";
+import * as z from "zod";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,7 +25,7 @@ export const Route = createFileRoute("/app/$organizationId/billing")({
 });
 
 const getLoaderData = createServerFn({ method: "GET" })
-  .inputValidator((data: { organizationId: string }) => data)
+  .inputValidator(z.object({ organizationId: z.string() }))
   .handler(async ({ data: { organizationId }, context: { authService } }) => {
     const request = getRequest();
     const subscriptions = await authService.api.listActiveSubscriptions({
@@ -213,7 +214,7 @@ function NoSubscriptionCard() {
 }
 
 const manageBilling = createServerFn({ method: "POST" })
-  .inputValidator((data: { organizationId: string }) => data)
+  .inputValidator(z.object({ organizationId: z.string() }))
   .handler(async ({ data: { organizationId }, context: { authService } }) => {
     const request = getRequest();
     const result = await authService.api.createBillingPortal({
@@ -228,7 +229,7 @@ const manageBilling = createServerFn({ method: "POST" })
 
 const cancelSubscription = createServerFn({ method: "POST" })
   .inputValidator(
-    (data: { organizationId: string; subscriptionId: string }) => data,
+    z.object({ organizationId: z.string(), subscriptionId: z.string() }),
   )
   .handler(
     async ({
@@ -250,7 +251,7 @@ const cancelSubscription = createServerFn({ method: "POST" })
 
 const restoreSubscription = createServerFn({ method: "POST" })
   .inputValidator(
-    (data: { organizationId: string; subscriptionId: string }) => data,
+    z.object({ organizationId: z.string(), subscriptionId: z.string() }),
   )
   .handler(
     async ({
