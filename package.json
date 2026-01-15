@@ -5,12 +5,11 @@
   "scripts": {
     "dev": "vite dev --force --port 3000",
     "build": "vite build",
-    "build:test": "vite build",
     "build:PRODUCTION": "CLOUDFLARE_ENV=production pnpm build",
     "serve": "vite preview",
     "test": "vitest run",
     "test:e2e": "pnpm exec playwright test",
-    "test:integration": "pnpm build:test && pnpm vitest --config test/integration/vitest.config.ts run",
+    "test:integration": "pnpm build && pnpm vitest --config test/integration/vitest.config.ts run",
     "deploy": "pnpm run build && wrangler deploy",
     "deploy:PRODUCTION": "pnpm build:PRODUCTION && wrangler deploy --env production",
     "preview": "pnpm run build && vite preview",

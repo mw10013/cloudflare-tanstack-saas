@@ -31,6 +31,8 @@ pnpm lint               # Run ESLint
 pnpm test               # Run all tests with Vitest. We only have d1-adapter tests so not that useful yet.
 ```
 
+Do not run `pnpm test:integration` since its tests are broken.
+
 - Run typecheck and lint after generating code.
 
 ## TypeScript Guidelines
