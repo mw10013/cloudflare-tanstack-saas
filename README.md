@@ -46,6 +46,10 @@ pnpm vitest --config test/integration/vitest.config.ts run test/integration/auth
 pnpm vitest --config test/integration/vitest.config.ts run test/integration/auth.test.ts -t "verifies magic link and creates a session"
 pnpm vitest --config test/integration/vitest.config.ts run test/integration/auth.test.ts -t "redirects /magic-link based on user role"
 pnpm vitest --config test/integration/vitest.config.ts run test/integration/auth.test.ts -t "signs out (endpoint reachable)"
+
+pnpm test:e2e e2e/stripe1.spec.ts --project=chromium --workers=1 --reporter=line
+pnpm test:e2e e2e/stripe1.spec.ts --project=chromium --workers=1 --repeat-each=3 --reporter=line
+pnpm -s test:e2e e2e/stripe1.spec.ts --project=chromium --workers=1
 ```
 
 ### E2E Tests
