@@ -3,11 +3,10 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/api/e2e/delete/user/$email")({
   server: {
     handlers: {
-      POST: async ({ params, context }) => {
-        const { repository, stripeService, env } = context;
-
-        const email = params.email;
-
+      POST: async ({
+        params: { email },
+        context: { repository, stripeService, env },
+      }) => {
         // Always delete Stripe customers by email since D1 database may be out of sync
         const customers = await stripeService.stripe.customers.list({
           email,
@@ -19,21 +18,18 @@ export const Route = createFileRoute("/api/e2e/delete/user/$email")({
 
         const user = await repository.getUser({ email });
         if (!user) {
-          return new Response(
-            JSON.stringify({
-              success: true,
-              message: `User ${email} already deleted.`,
-            }),
-            { headers: { "Content-Type": "application/json" } },
-          );
+          return Response.json({
+            success: true,
+            message: `User ${email} already deleted.`,
+          });
         }
         if (user.role === "admin") {
-          return new Response(
-            JSON.stringify({
+          return Response.json(
+            {
               success: false,
               message: `Cannot delete admin user ${email}.`,
-            }),
-            { status: 403, headers: { "Content-Type": "application/json" } },
+            },
+            { status: 403 },
           );
         }
         const results = await env.D1.batch([
@@ -60,14 +56,11 @@ delete from Organization where organizationId in (select organizationId from t)
         console.log(
           `e2e deleted user ${email} (deletedCount: ${String(deletedCount)})`,
         );
-        return new Response(
-          JSON.stringify({
-            success: true,
-            message: `Deleted user ${email} (deletedCount: ${String(deletedCount)}).`,
-            customers: customers.data,
-          }),
-          { headers: { "Content-Type": "application/json" } },
-        );
+        return Response.json({
+          success: true,
+          message: `Deleted user ${email} (deletedCount: ${String(deletedCount)}).`,
+          customers: customers.data,
+        });
       },
     },
   },

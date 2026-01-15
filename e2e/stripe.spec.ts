@@ -22,7 +22,7 @@ test.describe("subscribe", () => {
     .forEach(({ email, intent, planName }) => {
       test(`${intent} for ${email}`, async ({ page, request, baseURL }) => {
         invariant(baseURL, "Missing baseURL");
-        const pom = new StripePom({ page, baseURL });
+        const pom = createStripePom({ page, baseURL });
 
         await pom.deleteUser({ request, email });
         await pom.login({ email });
@@ -50,7 +50,7 @@ test.describe("subscribe/cancel", () => {
     .forEach(({ email, intent, planName }) => {
       test(`${intent} for ${email}`, async ({ page, request, baseURL }) => {
         invariant(baseURL, "Missing baseURL");
-        const pom = new StripePom({ page, baseURL });
+        const pom = createStripePom({ page, baseURL });
 
         await pom.deleteUser({ request, email });
         await pom.login({ email });
@@ -95,7 +95,7 @@ test.describe("subscribe/upgrade", () => {
         baseURL,
       }) => {
         invariant(baseURL, "Missing baseURL");
-        const pom = new StripePom({ page, baseURL });
+        const pom = createStripePom({ page, baseURL });
 
         await pom.deleteUser({ request, email });
         await pom.login({ email });
@@ -110,154 +110,161 @@ test.describe("subscribe/upgrade", () => {
 
 // https://playwright.dev/docs/pom
 
-class StripePom {
+const createStripePom = ({
+  page,
+  baseURL,
+}: {
   readonly page: Page;
   readonly baseURL: string;
+}) => {
+  invariant(baseURL.endsWith("/"), "baseURL must have a trailing slash");
 
-  constructor({ page, baseURL }: { page: Page; baseURL: string }) {
-    invariant(baseURL.endsWith("/"), "baseURL must have a trailing slash");
-    this.page = page;
-    this.baseURL = baseURL;
-  }
-
-  async deleteUser({
+  const deleteUser = async ({
     request,
     email,
   }: {
     request: APIRequestContext;
     email: string;
-  }) {
+  }) => {
     const response = await request.post(`/api/e2e/delete/user/${email}`);
     expect(response.ok()).toBe(true);
-  }
+  };
 
-  async login({ email }: { email: string }) {
-    await this.page.goto("/login");
-    await this.page.getByRole("textbox", { name: "Email" }).fill(email);
-    await this.page.getByRole("button", { name: "Send magic link" }).click();
-    await this.page.getByRole("link", { name: /magic-link/ }).waitFor();
-    await this.page.getByRole("link", { name: /magic-link/ }).click();
-    await this.page.waitForURL(/\/app\//);
-  }
+  const login = async ({ email }: { email: string }) => {
+    await page.goto("/login");
+    await page.getByRole("textbox", { name: "Email" }).fill(email);
+    await page.getByRole("button", { name: "Send magic link" }).click();
+    await page.getByRole("link", { name: /magic-link/ }).waitFor();
+    await page.getByRole("link", { name: /magic-link/ }).click();
+    await page.waitForURL(/\/app\//);
+  };
 
-  async navigateToPricing() {
-    await this.page.getByRole("link", { name: "Home", exact: true }).click();
-    await this.page.getByRole("link", { name: "Pricing" }).click();
-  }
+  const navigateToPricing = async () => {
+    await page.getByRole("link", { name: "Home", exact: true }).click();
+    await page.getByRole("link", { name: "Pricing" }).click();
+  };
 
-  async selectPlan({ intent }: { intent: string }) {
-    // Find the plan that matches the intent (lookup key).
+  const selectPlan = async ({ intent }: { intent: string }) => {
     const plan = planData.find(
       (p) =>
         p.monthlyPriceLookupKey === intent || p.annualPriceLookupKey === intent,
     );
     if (!plan) throw new Error(`Plan not found for intent ${intent}`);
-    // Determine if the intent is for annual pricing.
+
     const isAnnual = intent === plan.annualPriceLookupKey;
-    // Get the switch element and check its current state.
-    const switchElement = this.page.getByLabel("Annual pricing");
+    const switchElement = page.getByLabel("Annual pricing");
     const isCurrentlyAnnual =
       (await switchElement.getAttribute("aria-checked")) === "true";
-    // Toggle the switch only if it's not already in the desired state.
+
     if (isAnnual !== isCurrentlyAnnual) {
       await switchElement.dispatchEvent("click");
     }
-    // Click the "Purchase" button for the plan.
-    await this.page.getByTestId(plan.name).click();
-  }
 
-  async fillPaymentForm({ email }: { email: string }) {
-    // Use dispatchEvent instead of click because the button has 0x0 dimensions and is not considered visible by Playwright
-    await this.page
-      .getByTestId("card-accordion-item-button")
-      .dispatchEvent("click");
+    await page.getByTestId(plan.name).click();
+  };
 
-    await this.page.getByRole("textbox", { name: "Card number" }).click();
-    await this.page
+  const fillPaymentForm = async ({ email }: { email: string }) => {
+    await page.getByTestId("card-accordion-item-button").dispatchEvent("click");
+
+    await page.getByRole("textbox", { name: "Card number" }).click();
+    await page
       .getByRole("textbox", { name: "Card number" })
       .fill("4242 4242 4242 4242");
-    await this.page.getByRole("textbox", { name: "Expiration" }).click();
-    await this.page
-      .getByRole("textbox", { name: "Expiration" })
-      .fill("12 / 34");
-    await this.page.getByRole("textbox", { name: "CVC" }).click();
-    await this.page.getByRole("textbox", { name: "CVC" }).fill("123");
-    await this.page.getByRole("textbox", { name: "Cardholder name" }).click();
-    await this.page
-      .getByRole("textbox", { name: "Cardholder name" })
-      .fill(email);
-    await this.page.getByRole("textbox", { name: "ZIP" }).click();
-    await this.page.getByRole("textbox", { name: "ZIP" }).fill("12345");
-    await this.page
+    await page.getByRole("textbox", { name: "Expiration" }).click();
+    await page.getByRole("textbox", { name: "Expiration" }).fill("12 / 34");
+    await page.getByRole("textbox", { name: "CVC" }).click();
+    await page.getByRole("textbox", { name: "CVC" }).fill("123");
+    await page.getByRole("textbox", { name: "Cardholder name" }).click();
+    await page.getByRole("textbox", { name: "Cardholder name" }).fill(email);
+    await page.getByRole("textbox", { name: "ZIP" }).click();
+    await page.getByRole("textbox", { name: "ZIP" }).fill("12345");
+    await page
       .getByRole("checkbox", { name: "Save my information for" })
       .uncheck();
-  }
+  };
 
-  async submitPayment() {
-    await this.page.getByTestId("hosted-payment-submit-button").click();
-    await this.page.waitForURL(`${this.baseURL}**`);
-  }
+  const submitPayment = async () => {
+    await page.getByTestId("hosted-payment-submit-button").click();
+    await page.waitForURL(`${baseURL}**`);
+  };
 
-  async navigateToBilling() {
-    await this.page.getByTestId("sidebar-billing").click();
-    await this.page.waitForURL(/billing/);
-  }
+  const navigateToBilling = async () => {
+    await page.getByTestId("sidebar-billing").click();
+    await page.waitForURL(/billing/);
+  };
 
-  async verifySubscription({
+  const verifySubscription = async ({
     planName,
     status,
   }: {
     planName: string;
     status: string;
-  }) {
-    await this.navigateToBilling();
+  }) => {
+    await navigateToBilling();
     await expect(async () => {
-      await this.page.reload();
-      await expect(this.page.getByTestId("active-plan")).toContainText(
-        planName,
-        { ignoreCase: true, timeout: 100 }, // Timeout short since data is static.
-      );
-      await expect(this.page.getByTestId("active-status")).toContainText(
-        status,
-        { ignoreCase: true, timeout: 100 },
-      );
-    }).toPass({ timeout: 60_000 });
-  }
-
-  async cancelSubscription() {
-    await this.page
-      .getByRole("button", { name: "Cancel Subscription" })
-      .click();
-    await this.page.getByTestId("confirm").click();
-    await expect(this.page.getByTestId("page-container-main")).toContainText(
-      "Subscription canceled",
-    );
-    await this.page.getByTestId("return-to-business-link").click();
-    await this.page.waitForURL(`${this.baseURL}**`);
-  }
-
-  async verifyNoSubscription() {
-    await expect(async () => {
-      await this.page.reload();
-      await expect(
-        this.page.getByText("No active subscription for"),
-      ).toBeVisible({
+      await page.reload();
+      await expect(page.getByTestId("active-plan")).toContainText(planName, {
+        ignoreCase: true,
+        timeout: 100,
+      });
+      await expect(page.getByTestId("active-status")).toContainText(status, {
+        ignoreCase: true,
         timeout: 100,
       });
     }).toPass({ timeout: 60_000 });
-  }
+  };
 
-  async subscribe({ email, intent }: { email: string; intent: string }) {
-    await this.navigateToPricing();
-    await this.selectPlan({ intent });
-    await this.fillPaymentForm({ email });
-    await this.submitPayment();
-  }
+  const cancelSubscription = async () => {
+    await page.getByRole("button", { name: "Cancel Subscription" }).click();
+    await page.getByTestId("confirm").click();
+    await expect(page.getByTestId("page-container-main")).toContainText(
+      "Subscription canceled",
+    );
+    await page.getByTestId("return-to-business-link").click();
+    await page.waitForURL(`${baseURL}**`);
+  };
 
-  async upgrade({ intent }: { intent: string }) {
-    await this.navigateToPricing();
-    await this.selectPlan({ intent });
-    await this.page.getByTestId("confirm").click();
-    await this.page.waitForURL(`${this.baseURL}**`);
-  }
-}
+  const verifyNoSubscription = async () => {
+    await expect(async () => {
+      await page.reload();
+      await expect(page.getByText("No active subscription for")).toBeVisible({
+        timeout: 100,
+      });
+    }).toPass({ timeout: 60_000 });
+  };
+
+  const subscribe = async ({
+    email,
+    intent,
+  }: {
+    email: string;
+    intent: string;
+  }) => {
+    await navigateToPricing();
+    await selectPlan({ intent });
+    await fillPaymentForm({ email });
+    await submitPayment();
+  };
+
+  const upgrade = async ({ intent }: { intent: string }) => {
+    await navigateToPricing();
+    await selectPlan({ intent });
+    await page.getByTestId("confirm").click();
+    await page.waitForURL(`${baseURL}**`);
+  };
+
+  return {
+    deleteUser,
+    login,
+    navigateToPricing,
+    selectPlan,
+    fillPaymentForm,
+    submitPayment,
+    navigateToBilling,
+    verifySubscription,
+    cancelSubscription,
+    verifyNoSubscription,
+    subscribe,
+    upgrade,
+  };
+};
