@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/card";
 
 export const Route = createFileRoute("/app/$organizationId/billing")({
-  loader: ({ params: data }) => getLoaderData({ data }),
+  loader: ({ params }) => getLoaderData({ data: params }),
   component: RouteComponent,
 });
 
@@ -35,7 +35,16 @@ const getLoaderData = createServerFn({ method: "GET" })
     const activeSubscription = subscriptions.find(
       (v) => v.status === "active" || v.status === "trialing",
     );
-    return { activeSubscription };
+    const safeSubscription = activeSubscription && {
+      ...activeSubscription,
+      limits: activeSubscription.limits
+        ? Object.fromEntries(
+            Object.entries(activeSubscription.limits).map(([k]) => [k, {}]),
+          )
+        : undefined,
+    };
+
+    return { activeSubscription: safeSubscription };
   });
 
 function RouteComponent() {
