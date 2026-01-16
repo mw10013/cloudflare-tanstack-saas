@@ -126,8 +126,8 @@ function RouteComponent() {
         </TableHeader>
         <TableBody>
           {data.subscriptions.map((subscription) => (
-            <TableRow key={subscription.subscriptionId}>
-              <TableCell>{subscription.subscriptionId}</TableCell>
+            <TableRow key={subscription.id}>
+              <TableCell>{subscription.id}</TableCell>
               <TableCell>{subscription.user.email}</TableCell>
               <TableCell>{subscription.plan}</TableCell>
               <TableCell>{subscription.status}</TableCell>

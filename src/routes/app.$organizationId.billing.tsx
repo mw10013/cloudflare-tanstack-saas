@@ -36,19 +36,19 @@ const getLoaderData = createServerFn({ method: "GET" })
 
       if (env.ENVIRONMENT === "local") {
         const dbOrganization = await env.D1.prepare(
-          "select organizationId, name, slug, stripeCustomerId from Organization where organizationId = ?",
+          "select id, name, slug, stripeCustomerId from Organization where id = ?",
         )
           .bind(Number(organizationId))
           .first();
 
         const dbMembers = await env.D1.prepare(
-          "select memberId, userId, organizationId, role from Member where organizationId = ?",
+          "select id, userId, organizationId, role from Member where organizationId = ?",
         )
           .bind(Number(organizationId))
           .all();
 
         const dbSubscriptions = await env.D1.prepare(
-          "select subscriptionId, plan, referenceId, stripeCustomerId, stripeSubscriptionId, status, periodStart, periodEnd, trialStart, trialEnd, cancelAtPeriodEnd, seats from Subscription where referenceId = ? order by subscriptionId desc",
+          "select id, plan, referenceId, stripeCustomerId, stripeSubscriptionId, status, periodStart, periodEnd, trialStart, trialEnd, cancelAtPeriodEnd, seats from Subscription where referenceId = ? order by id desc",
         )
           .bind(Number(organizationId))
           .all();

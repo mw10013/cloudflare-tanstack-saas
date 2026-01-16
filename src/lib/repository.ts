@@ -1,6 +1,6 @@
-import * as Domain from "@/lib/domain";
 import { invariant } from "@epic-web/invariant";
 import * as z from "zod";
+import * as Domain from "@/lib/domain";
 
 /**
  * The repository provides data access methods for the application's domain entities.
@@ -53,7 +53,7 @@ select json_object(
   'users', coalesce((
     select json_group_array(
       json_object(
-        'userId', u.userId,
+        'id', u.id,
         'name', u.name,
         'email', u.email,
         'emailVerified', u.emailVerified,
@@ -111,7 +111,7 @@ select json_object(
   'userInvitations', (
     select json_group_array(
       json_object(
-        'invitationId', i.invitationId,
+        'id', i.id,
         'email', i.email,
         'inviterId', i.inviterId,
         'organizationId', i.organizationId,
@@ -119,7 +119,7 @@ select json_object(
         'status', i.status,
         'expiresAt', i.expiresAt,
         'organization', json_object(
-          'organizationId', o.organizationId,
+          'id', o.id,
           'name', o.name,
           'slug', o.slug,
           'logo', o.logo,
@@ -127,7 +127,7 @@ select json_object(
           'createdAt', o.createdAt
         ),
         'inviter', json_object(
-          'userId', u.userId,
+          'id', u.id,
           'name', u.name,
           'email', u.email,
           'emailVerified', u.emailVerified,
@@ -143,8 +143,8 @@ select json_object(
       )
     )
     from Invitation i
-    inner join Organization o on o.organizationId = i.organizationId
-    inner join User u on u.userId = i.inviterId
+    inner join Organization o on o.id = i.organizationId
+    inner join User u on u.id = i.inviterId
     where i.email = ?1 and i.status = 'pending'
   ),
   'memberCount', (
@@ -219,7 +219,7 @@ select json_object(
   'customers', coalesce((
     select json_group_array(
       json_object(
-        'userId', u.userId,
+        'id', u.id,
         'name', u.name,
         'email', u.email,
         'emailVerified', u.emailVerified,
@@ -233,7 +233,7 @@ select json_object(
         'updatedAt', u.updatedAt,
         'subscription', (
           select json_object(
-            'subscriptionId', s.subscriptionId,
+            'id', s.id,
             'plan', s.plan,
             'referenceId', s.referenceId,
             'stripeCustomerId', s.stripeCustomerId,
@@ -297,7 +297,7 @@ select json_object(
   'subscriptions', coalesce((
     select json_group_array(
       json_object(
-        'subscriptionId', s_subscriptionId,
+        'id', s_subscriptionId,
         'plan', s_plan,
         'referenceId', s_referenceId,
         'stripeCustomerId', s_stripeCustomerId,
@@ -310,7 +310,7 @@ select json_object(
         'trialStart', s_trialStart,
         'trialEnd', s_trialEnd,
         'user', json_object(
-          'userId', u_userId,
+          'id', u_userId,
           'name', u_name,
           'email', u_email,
           'emailVerified', u_emailVerified,
@@ -326,7 +326,7 @@ select json_object(
       )
     ) from (
       select 
-        s.subscriptionId as s_subscriptionId,
+        s.id as s_subscriptionId,
         s.plan as s_plan,
         s.referenceId as s_referenceId,
         s.stripeCustomerId as s_stripeCustomerId,
@@ -338,7 +338,7 @@ select json_object(
         s.seats as s_seats,
         s.trialStart as s_trialStart,
         s.trialEnd as s_trialEnd,
-        u.userId as u_userId,
+        u.id as u_userId,
         u.name as u_name,
         u.email as u_email,
         u.emailVerified as u_emailVerified,
@@ -401,7 +401,7 @@ select json_object(
   'sessions', coalesce((
     select json_group_array(
       json_object(
-        'sessionId', s_sessionId,
+        'id', s_sessionId,
         'expiresAt', s_expiresAt,
         'token', s_token,
         'createdAt', s_createdAt,
@@ -412,7 +412,7 @@ select json_object(
         'impersonatedBy', s_impersonatedBy,
         'activeOrganizationId', s_activeOrganizationId,
         'user', json_object(
-          'userId', u_userId,
+          'id', u_userId,
           'name', u_name,
           'email', u_email,
           'emailVerified', u_emailVerified,
@@ -428,7 +428,7 @@ select json_object(
       )
     ) from (
       select 
-        s.sessionId as s_sessionId,
+        s.id as s_sessionId,
         s.expiresAt as s_expiresAt,
         s.token as s_token,
         s.createdAt as s_createdAt,
@@ -438,7 +438,7 @@ select json_object(
         s.userId as s_userId,
         s.impersonatedBy as s_impersonatedBy,
         s.activeOrganizationId as s_activeOrganizationId,
-        u.userId as u_userId,
+        u.id as u_userId,
         u.name as u_name,
         u.email as u_email,
         u.emailVerified as u_emailVerified,
@@ -451,7 +451,7 @@ select json_object(
         u.createdAt as u_createdAt,
         u.updatedAt as u_updatedAt
       from Session s
-      inner join User u on s.userId = u.userId
+      inner join User u on s.userId = u.id
       where u.email like ?1
       order by u_email asc, s_createdAt asc
       limit ?2 offset ?3
@@ -460,7 +460,7 @@ select json_object(
   'count', (
     select count(*)
     from Session s
-    inner join User u on s.userId = u.userId
+    inner join User u on s.userId = u.id
     where u.email like ?1
   ),
   'limit', ?2,
@@ -492,7 +492,7 @@ select json_object(
     role: string;
   }) => {
     await db
-      .prepare("update Invitation set role = ?1 where invitationId = ?2")
+      .prepare("update Invitation set role = ?1 where id = ?2")
       .bind(role, invitationId)
       .run();
   };

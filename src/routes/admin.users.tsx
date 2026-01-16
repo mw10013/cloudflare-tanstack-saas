@@ -195,8 +195,8 @@ function RouteComponent() {
         </TableHeader>
         <TableBody>
           {data.users.map((user) => (
-            <TableRow key={user.userId}>
-              <TableCell>{user.userId}</TableCell>
+            <TableRow key={user.id}>
+              <TableCell>{user.id}</TableCell>
               <TableCell>{user.email}</TableCell>
               <TableCell>{user.role}</TableCell>
               <TableCell>{String(user.emailVerified)}</TableCell>
@@ -222,7 +222,7 @@ function RouteComponent() {
                       <DropdownMenuItem
                         onClick={() => {
                           void unbanUserServerFn({
-                            data: { userId: String(user.userId) },
+                            data: { userId: String(user.id) },
                           }).then(() => router.invalidate());
                         }}
                       >
@@ -233,7 +233,7 @@ function RouteComponent() {
                         onClick={() => {
                           setBanDialog({
                             isOpen: true,
-                            userId: String(user.userId),
+                            userId: String(user.id),
                           });
                         }}
                       >
@@ -243,7 +243,7 @@ function RouteComponent() {
                     <DropdownMenuItem
                       onClick={() => {
                         void impersonateUserServerFn({
-                          data: { userId: String(user.userId) },
+                          data: { userId: String(user.id) },
                         });
                       }}
                     >

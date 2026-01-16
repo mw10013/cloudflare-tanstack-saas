@@ -127,8 +127,8 @@ function RouteComponent() {
         </TableHeader>
         <TableBody>
           {data.customers.map((customer) => (
-            <TableRow key={customer.userId}>
-              <TableCell>{customer.userId}</TableCell>
+            <TableRow key={customer.id}>
+              <TableCell>{customer.id}</TableCell>
               <TableCell>{customer.email}</TableCell>
               <TableCell>
                 {customer.stripeCustomerId ? (

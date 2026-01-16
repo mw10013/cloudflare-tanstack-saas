@@ -60,7 +60,6 @@ function createBetterAuthOptions({
     session: { modelName: "Session", storeSessionInDatabase: true },
     account: {
       modelName: "Account",
-      fields: { accountId: "betterAuthAccountId" },
       accountLinking: { enabled: true },
     },
     verification: { modelName: "Verification" },
@@ -270,10 +269,10 @@ export function createAuthService(
         const activeOrganizationId =
           (await options.db
             .prepare(
-              "select organizationId from Member where userId = ? and role = 'owner'",
+              "select id from Organization where id in (select organizationId from Member where userId = ? and role = 'owner')",
             )
             .bind(session.userId)
-            .first<number>("organizationId")) ?? undefined;
+            .first<number>("id")) ?? undefined;
         return {
           data: {
             ...session,

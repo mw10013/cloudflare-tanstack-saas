@@ -5,27 +5,9 @@ import { createAdapterFactory } from "better-auth/adapters";
 
 /**
  * Better-Auth options allow you to specify model names and we do so to align with our
- * SQLite schema, which uses capitalized table names (e.g., 'User').
- * Better-Auth adapter test harness hard-codes model names in lower-case (e.g., 'user').
+ * SQLite schema, which uses capitalized table names (e.g., "User").
+ * Better-Auth adapter test harness hard-codes model names in lower-case (e.g., "user").
  * Fortunately, the hard-coded model names are singular but we still need to handle the capitalization.
- *
- * Better-Auth uses `id` as the primary key for all its domain objects. Our SQLLite schema uses `userId` and `sessionId` ie.
- * the name of the table with first letter lowercased and `Id` appended. We map select and where clauses along with D1 results
- * to adapt to this convention.
- * 
- * If a Better-Auth field name conflicts with an id name, the field name needs to be renamed. A Better-Auth `account` has a field
- * named `accountId`. We rename it to `betterAuthAccountId` and convey that to Better-Auth in its options.
-
- * @example
- * account: {
- *   modelName: "Account",
- *   fields: { accountId: "betterAuthAccountId" },
- * }
- *
- * We need to map database results to change model id to Better-Auth id. Eg. `userId` -> `id`, `sessionId` -> `id.
- * The Better-Auth CustomAdapter interface uses an unconstrained type parameter of `T` and that is too loose for our mapping
- * since we need to work with a `Record<string, unknown>` shape. Currently using `as any` to get around this and hope we can
- * find a type-safe solution in the future.
  *
  * Better-Auth does not seem to serialize Date objects as text in where clauses when `supportsDates` is false.
  * We handle this by serializing Date objects to ISO strings in `where` processing.
@@ -48,24 +30,19 @@ function adapt({
     rawModel[0] === rawModel[0].toLowerCase()
       ? rawModel[0].toUpperCase() + rawModel.slice(1)
       : rawModel;
-  const modelId = model[0].toLowerCase() + model.slice(1) + "Id";
 
   return {
     model,
-    modelId,
-    selectClause: select?.length
-      ? select.map((s) => (s === "id" ? modelId : s)).join(", ")
-      : "*",
-    ...adaptWhere({ where, modelId }),
+    selectClause: select?.length ? select.join(", ") : "*",
+    ...adaptWhere({ where }),
     mapResult: <T extends Record<string, unknown>>(result?: T | null) => {
       if (!result) return null;
-      const id = result[modelId];
-      return id === undefined ? result : { ...result, id }; // For simplicity, we append `id` rather than replace.
+      return result;
     },
   };
 }
 
-function adaptWhere({ where, modelId }: { where?: Where[]; modelId: string }): {
+function adaptWhere({ where }: { where?: Where[] }): {
   whereClause?: string;
   // unknown[] to align with D1's bind(...values: unknown[]) method
   whereValues: unknown[];
@@ -81,7 +58,7 @@ function adaptWhere({ where, modelId }: { where?: Where[]; modelId: string }): {
   for (const w of where) {
     type Operator = NonNullable<Where["operator"]>;
     const op = (w.operator ?? "eq") as Operator;
-    const field = w.field === "id" ? modelId : w.field;
+    const field = w.field;
     let sql = "";
     switch (op) {
       case "eq":

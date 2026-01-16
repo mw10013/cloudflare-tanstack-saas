@@ -51,35 +51,35 @@ export const Route = createFileRoute("/api/e2e/delete/user/$email")({
  user_stripe as (
    select stripeCustomerId
    from User
-   where userId = ?1
+   where id = ?1
  )
  delete from Subscription
- where referenceId in (select organizationId from owned_orgs)
- or stripeCustomerId in (select stripeCustomerId from user_stripe)
- `,
-          ).bind(user.userId),
+  where referenceId in (select organizationId from owned_orgs)
+  or stripeCustomerId in (select stripeCustomerId from user_stripe)
+  `,
+          ).bind(user.id),
           env.D1.prepare(
             `
- with owned_orgs as (
-   select m.organizationId
-   from Member m
-   where m.userId = ?1
-   and m.role = 'owner'
-   and not exists (
-     select 1
-     from Member m1
-     where m1.organizationId = m.organizationId
-     and m1.userId != ?1
-     and m1.role = 'owner'
-   )
- )
- delete from Organization
- where organizationId in (select organizationId from owned_orgs)
- `,
-          ).bind(user.userId),
+  with owned_orgs as (
+    select m.organizationId
+    from Member m
+    where m.userId = ?1
+    and m.role = 'owner'
+    and not exists (
+      select 1
+      from Member m1
+      where m1.organizationId = m.organizationId
+      and m1.userId != ?1
+      and m1.role = 'owner'
+    )
+  )
+  delete from Organization
+  where id in (select organizationId from owned_orgs)
+  `,
+          ).bind(user.id),
           env.D1.prepare(
-            `delete from User where userId = ? and role <> 'admin' returning *`,
-          ).bind(user.userId),
+            `delete from User where id = ? and role <> 'admin' returning *`,
+          ).bind(user.id),
         ]);
 
         const deletedCount = results[1].results.length;

@@ -124,8 +124,8 @@ function RouteComponent() {
         </TableHeader>
         <TableBody>
           {data.sessions.map((session) => (
-            <TableRow key={session.sessionId}>
-              <TableCell>{session.sessionId}</TableCell>
+            <TableRow key={session.id}>
+              <TableCell>{session.id}</TableCell>
               <TableCell>{session.user.email}</TableCell>
               <TableCell>{session.ipAddress ?? ""}</TableCell>
               <TableCell>{session.createdAt.toLocaleString()}</TableCell>

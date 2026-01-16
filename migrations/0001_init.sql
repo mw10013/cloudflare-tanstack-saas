@@ -33,7 +33,7 @@ values
 
 --> statement-breakpoint
 create table User (
-  userId integer primary key,
+  id integer primary key,
   name text not null default '',
   email text not null unique,
   emailVerified integer not null default 0,
@@ -49,16 +49,16 @@ create table User (
 
 --> statement-breakpoint
 create table Session (
-  sessionId integer primary key,
+  id integer primary key,
   expiresAt text not null,
   token text not null unique,
   createdAt text not null default (datetime('now')),
   updatedAt text not null default (datetime('now')),
   ipAddress text,
   userAgent text,
-  userId integer not null references User (userId) on delete cascade,
-  impersonatedBy integer references User (userId),
-  activeOrganizationId integer references Organization (organizationId) on delete cascade
+  userId integer not null references User (id) on delete cascade,
+  impersonatedBy integer references User (id),
+  activeOrganizationId integer references Organization (id) on delete cascade
 );
 
 --> statement-breakpoint
@@ -69,7 +69,7 @@ create index SessionExpiresAtIndex on Session (expiresAt);
 
 --> statement-breakpoint
 create table Organization (
-  organizationId integer primary key,
+  id integer primary key,
   name text not null,
   slug text not null unique,
   logo text,
@@ -84,9 +84,9 @@ create index OrganizationSlugIndex on Organization (slug);
 
 --> statement-breakpoint
 create table Member (
-  memberId integer primary key,
-  userId integer not null references User (userId) on delete cascade,
-  organizationId integer not null references Organization (organizationId) on delete cascade,
+  id integer primary key,
+  userId integer not null references User (id) on delete cascade,
+  organizationId integer not null references Organization (id) on delete cascade,
   role text not null references MemberRole (memberRoleId),
   createdAt text not null default (datetime('now'))
 );
@@ -99,10 +99,10 @@ create index MemberOrganizationIdIndex on Member (organizationId);
 
 --> statement-breakpoint
 create table Invitation (
-  invitationId integer primary key,
+  id integer primary key,
   email text not null,
-  inviterId integer not null references User (userId),
-  organizationId integer not null references Organization (organizationId) on delete cascade,
+  inviterId integer not null references User (id),
+  organizationId integer not null references Organization (id) on delete cascade,
   role text not null references MemberRole (memberRoleId),
   status text not null references InvitationStatus (invitationStatusId),
   createdAt text not null,
@@ -117,10 +117,10 @@ create index InvitationOrganizationIdIndex on Invitation (organizationId);
 
 --> statement-breakpoint
 create table Account (
-  accountId integer primary key,
-  betterAuthAccountId text not null,
+  id integer primary key,
+  accountId text not null,
   providerId text not null,
-  userId integer not null references User (userId) on delete cascade,
+  userId integer not null references User (id) on delete cascade,
   accessToken text,
   refreshToken text,
   idToken text,
@@ -137,7 +137,7 @@ create index AccountUserIdIndex on Account (userId);
 
 --> statement-breakpoint
 create table Verification (
-  verificationId integer primary key,
+  id integer primary key,
   identifier text not null,
   value text not null,
   expiresAt text not null,
@@ -152,9 +152,9 @@ create index VerificationIdentifierIndex on Verification (identifier);
 create index VerificationExpiresAtIndex on Verification (expiresAt);
 
 create table Subscription (
-  subscriptionId integer primary key,
+  id integer primary key,
   plan text not null,
-  referenceId integer not null references Organization (organizationId) on delete cascade,
+  referenceId integer not null references Organization (id) on delete cascade,
   stripeCustomerId text,
   stripeSubscriptionId text,
   status text not null,
@@ -171,15 +171,15 @@ create table Subscription (
 
 --> statement-breakpoint
 insert into
-  User (userId, name, email, role)
+  User (id, name, email, role)
 values
   (1, 'Admin', 'a@a.com', 'admin');
 
 --> statement-breakpoint
 insert into
   Account (
+    id,
     accountId,
-    betterAuthAccountId,
     providerId,
     userId,
     password

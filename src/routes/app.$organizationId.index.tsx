@@ -85,10 +85,7 @@ function RouteComponent() {
           <CardContent>
             <div>
               {userInvitations.map((invitation) => (
-                <InvitationItem
-                  key={invitation.invitationId}
-                  invitation={invitation}
-                />
+                <InvitationItem key={invitation.id} invitation={invitation} />
               ))}
             </div>
           </CardContent>
@@ -137,7 +134,7 @@ function InvitationItem({
   const acceptInvitationMutation = useMutation({
     mutationFn: () =>
       acceptInvitationServerFn({
-        data: { invitationId: String(invitation.invitationId) },
+        data: { invitationId: String(invitation.id) },
       }),
     onSuccess: () => {
       void router.invalidate();
@@ -147,7 +144,7 @@ function InvitationItem({
   const rejectInvitationMutation = useMutation({
     mutationFn: () =>
       rejectInvitationServerFn({
-        data: { invitationId: String(invitation.invitationId) },
+        data: { invitationId: String(invitation.id) },
       }),
     onSuccess: () => {
       void router.invalidate();

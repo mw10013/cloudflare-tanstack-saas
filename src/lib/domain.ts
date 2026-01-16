@@ -63,7 +63,7 @@ export const SubscriptionStatus = z.enum([
 export type SubscriptionStatus = z.infer<typeof SubscriptionStatus>;
 
 export const Invitation = z.object({
-  invitationId: z.number().int(),
+  id: z.number().int(),
   email: z.email(),
   inviterId: z.number().int(),
   organizationId: z.number().int(),
@@ -74,7 +74,7 @@ export const Invitation = z.object({
 export type Invitation = z.infer<typeof Invitation>;
 
 export const User = z.object({
-  userId: z.number().int(),
+  id: z.number().int(),
   name: z.string(),
   email: z.email(),
   emailVerified: intToBoolean,
@@ -90,7 +90,7 @@ export const User = z.object({
 export type User = z.infer<typeof User>;
 
 export const Session = z.object({
-  sessionId: z.number().int(),
+  id: z.number().int(),
   expiresAt: isoDatetimeToDate,
   token: z.string(),
   createdAt: isoDatetimeToDate,
@@ -104,7 +104,7 @@ export const Session = z.object({
 export type Session = z.infer<typeof Session>;
 
 export const Organization = z.object({
-  organizationId: z.number().int(),
+  id: z.number().int(),
   name: z.string().nonempty(),
   slug: z.string().nonempty(),
   logo: z.string().nullable(),
@@ -153,7 +153,7 @@ export const Plan = z.object({
 export type Plan = z.infer<typeof Plan>;
 
 export const Subscription = z.object({
-  subscriptionId: z.number().int(),
+  id: z.number().int(),
   plan: z.string().nonempty(),
   referenceId: z.number().int(),
   stripeCustomerId: z.string().nullable(),
