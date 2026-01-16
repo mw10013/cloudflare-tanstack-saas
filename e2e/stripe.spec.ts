@@ -217,6 +217,7 @@ const createStripePom = ({
 
   const cancelSubscription = async () => {
     await page.getByRole("button", { name: "Cancel Subscription" }).click();
+    await page.waitForURL(/stripe/);
     await page.getByTestId("confirm").click();
     await expect(page.getByTestId("page-container-main")).toContainText(
       "Subscription canceled",

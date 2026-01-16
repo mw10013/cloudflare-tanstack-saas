@@ -221,6 +221,13 @@ function createBetterAuthOptions({
             return Promise.resolve();
           },
         },
+        organization: {
+          enabled: true,
+          getCustomerCreateParams: (_organization, ctx) => {
+            const userEmail = ctx.context.session?.user.email;
+            return Promise.resolve(userEmail ? { email: userEmail } : {});
+          },
+        },
         schema: {
           subscription: {
             modelName: "Subscription",

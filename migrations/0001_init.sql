@@ -85,7 +85,7 @@ create index OrganizationSlugIndex on Organization (slug);
 --> statement-breakpoint
 create table Member (
   memberId integer primary key,
-  userId integer not null references User (userid) on delete cascade,
+  userId integer not null references User (userId) on delete cascade,
   organizationId integer not null references Organization (organizationId) on delete cascade,
   role text not null references MemberRole (memberRoleId),
   createdAt text not null default (datetime('now'))

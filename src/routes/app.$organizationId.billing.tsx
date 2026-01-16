@@ -26,24 +26,55 @@ export const Route = createFileRoute("/app/$organizationId/billing")({
 
 const getLoaderData = createServerFn({ method: "GET" })
   .inputValidator(z.object({ organizationId: z.string() }))
-  .handler(async ({ data: { organizationId }, context: { authService } }) => {
-    const request = getRequest();
-    const subscriptions = await authService.api.listActiveSubscriptions({
-      headers: request.headers,
-      query: { referenceId: organizationId },
-    });
-    const activeSubscription = subscriptions.find(
-      (v) => v.status === "active" || v.status === "trialing",
-    );
+  .handler(
+    async ({ data: { organizationId }, context: { authService, env } }) => {
+      const request = getRequest();
+      const subscriptions = await authService.api.listActiveSubscriptions({
+        headers: request.headers,
+        query: { referenceId: organizationId, customerType: "organization" },
+      });
 
-    return {
-      // `limits` is typed as `Record<string, unknown>` in better-auth's stripe plugin.
-      // TanStack Start server function results must be serializable (no `unknown`), so we omit it.
-      activeSubscription: activeSubscription
-        ? (({ limits: _limits, ...rest }) => rest)(activeSubscription)
-        : undefined,
-    };
-  });
+      if (env.ENVIRONMENT === "local") {
+        const dbOrganization = await env.D1.prepare(
+          "select organizationId, name, slug, stripeCustomerId from Organization where organizationId = ?",
+        )
+          .bind(Number(organizationId))
+          .first();
+
+        const dbMembers = await env.D1.prepare(
+          "select memberId, userId, organizationId, role from Member where organizationId = ?",
+        )
+          .bind(Number(organizationId))
+          .all();
+
+        const dbSubscriptions = await env.D1.prepare(
+          "select subscriptionId, plan, referenceId, stripeCustomerId, stripeSubscriptionId, status, periodStart, periodEnd, trialStart, trialEnd, cancelAtPeriodEnd, seats from Subscription where referenceId = ? order by subscriptionId desc",
+        )
+          .bind(Number(organizationId))
+          .all();
+
+        console.log("billing loader: org", {
+          organizationId,
+          dbOrganization,
+          dbMembers: dbMembers.results,
+          dbSubscriptions: dbSubscriptions.results,
+          apiSubscriptions: subscriptions,
+        });
+      }
+
+      const activeSubscription = subscriptions.find(
+        (v) => v.status === "active" || v.status === "trialing",
+      );
+
+      return {
+        // `limits` is typed as `Record<string, unknown>` in better-auth's stripe plugin.
+        // TanStack Start server function results must be serializable (no `unknown`), so we omit it.
+        activeSubscription: activeSubscription
+          ? (({ limits: _limits, ...rest }) => rest)(activeSubscription)
+          : undefined,
+      };
+    },
+  );
 
 function RouteComponent() {
   const { activeSubscription } = Route.useLoaderData();
@@ -228,6 +259,7 @@ const manageBilling = createServerFn({ method: "POST" })
       headers: request.headers,
       body: {
         referenceId: organizationId,
+        customerType: "organization",
         returnUrl: `${new URL(request.url).origin}/app/${organizationId}/billing`,
       },
     });
@@ -248,10 +280,12 @@ const cancelSubscription = createServerFn({ method: "POST" })
         headers: request.headers,
         body: {
           referenceId: organizationId,
+          customerType: "organization",
           subscriptionId,
           returnUrl: `${new URL(request.url).origin}/app/${organizationId}/billing`,
         },
       });
+
       return result;
     },
   );
@@ -270,6 +304,7 @@ const restoreSubscription = createServerFn({ method: "POST" })
         headers: request.headers,
         body: {
           referenceId: organizationId,
+          customerType: "organization",
           subscriptionId,
         },
       });

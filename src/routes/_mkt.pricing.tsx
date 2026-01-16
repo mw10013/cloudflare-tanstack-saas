@@ -65,7 +65,10 @@ const upgradeSubscriptionServerFn = createServerFn({ method: "POST" })
       const request = getRequest();
       const subscriptions = await authService.api.listActiveSubscriptions({
         headers: request.headers,
-        query: { referenceId: activeOrganizationId },
+        query: {
+          referenceId: activeOrganizationId,
+          customerType: "organization",
+        },
       });
       const subscriptionId =
         subscriptions.length > 0
@@ -77,13 +80,14 @@ const upgradeSubscriptionServerFn = createServerFn({ method: "POST" })
         subscriptionId,
       });
 
-      const { url, redirect: isRedirect } =
-        await authService.api.upgradeSubscription({
+      const { url, redirect: isRedirect } = await authService.api
+        .upgradeSubscription({
           headers: request.headers,
           body: {
             plan: plan.name,
             annual: intent === plan.annualPriceLookupKey,
             referenceId: activeOrganizationId,
+            customerType: "organization",
             subscriptionId,
             seats: 1,
             successUrl: "/app",
@@ -91,6 +95,10 @@ const upgradeSubscriptionServerFn = createServerFn({ method: "POST" })
             returnUrl: `/app/${activeOrganizationId}`,
             disableRedirect: false,
           },
+        })
+        .catch((error: unknown) => {
+          console.error("pricing: upgradeSubscription failed", error);
+          throw error;
         });
 
       console.log(`pricing: upgradeSubscription`, { isRedirect, url });
