@@ -161,6 +161,7 @@ const createStripePom = ({
     }
 
     await page.getByTestId(plan.name).click();
+    await page.waitForURL(/stripe/);
   };
 
   const fillPaymentForm = async ({ email }: { email: string }) => {
