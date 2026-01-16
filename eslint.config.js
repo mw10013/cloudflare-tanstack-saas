@@ -12,6 +12,8 @@ export default defineConfig(
     ".wrangler/",
     "worker-configuration.d.ts",
     "refs/",
+    "playwright-report/",
+    "test-results/",
     "src/components/ui/carousel.tsx",
     "src/components/ui/chart.tsx",
     "src/components/ui/field.tsx",
