@@ -16,6 +16,9 @@ import { createAdapterFactory } from "better-auth/adapters";
  * The Organization plugin works with `activeOrganizationId` as a string, but the SQLite schema has it typed as a number.
  * We handle this by transforming `activeOrganizationId` in the `customTransformOutput` function.
  *
+ * Better-Auth Stripe expects `referenceId` as a string, while our Subscription table stores it as an integer.
+ * We normalize it to a string in `customTransformOutput` to keep database schema intact.
+ *
  * Organization IDs use autoincrement because Stripe customer search keys are
  * based on organizationId metadata, and our e2e delete flow removes Stripe
  * customers out-of-band. Stripe search is eventually consistent, so reusing
@@ -146,6 +149,9 @@ export const d1Adapter = (db: D1Database | D1DatabaseSession) => {
       // },
       customTransformOutput: ({ field, data }) => {
         if (field === "activeOrganizationId" && typeof data === "number") {
+          return String(data);
+        }
+        if (field === "referenceId" && typeof data === "number") {
           return String(data);
         }
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return
