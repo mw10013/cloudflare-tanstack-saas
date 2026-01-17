@@ -32,9 +32,10 @@ export const Route = createFileRoute("/api/e2e/delete/user/$email")({
           );
         }
 
-        const results = await env.D1.batch([
-          env.D1.prepare(
-            `
+        const [deleteOrganizationResult, deleteUserResult] = await env.D1.batch(
+          [
+            env.D1.prepare(
+              `
 delete from Organization where id in (
   select o.id
   from Organization o
@@ -50,21 +51,18 @@ delete from Organization where id in (
     )
 )
           `,
-          ).bind(user.id),
-          env.D1.prepare("delete from User where id = ? returning *").bind(
-            user.id,
-          ),
-        ]);
-
-        const deletedCount = (results[results.length - 1] ?? { results: [] })
-          .results.length;
-
-        console.log(
-          `e2e deleted user ${email} (deletedCount: ${String(deletedCount)})`,
+            ).bind(user.id),
+            env.D1.prepare("delete from User where id = ? returning *").bind(
+              user.id,
+            ),
+          ],
         );
+
+        const message = `Deleted user ${email}, deletedOrganizationCount: ${String(deleteOrganizationResult.results.length)} deletedUserCount: ${String(deleteUserResult.results.length)})`;
+        console.log(message);
         return Response.json({
           success: true,
-          message: `Deleted user ${email} (deletedCount: ${String(deletedCount)}).`,
+          message,
         });
       },
     },
