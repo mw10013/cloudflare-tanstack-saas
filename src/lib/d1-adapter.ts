@@ -15,6 +15,11 @@ import { createAdapterFactory } from "better-auth/adapters";
  * Better-Auth with the Organization plugin does not seem to handle `activeOrganizationId` data transformation.
  * The Organization plugin works with `activeOrganizationId` as a string, but the SQLite schema has it typed as a number.
  * We handle this by transforming `activeOrganizationId` in the `customTransformOutput` function.
+ *
+ * Organization IDs use autoincrement because Stripe customer search keys are
+ * based on organizationId metadata, and our e2e delete flow removes Stripe
+ * customers out-of-band. Stripe search is eventually consistent, so reusing
+ * org IDs can cause Better Auth to match stale Stripe customers during tests.
  */
 
 function adapt({

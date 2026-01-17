@@ -69,7 +69,7 @@ create index SessionExpiresAtIndex on Session (expiresAt);
 
 --> statement-breakpoint
 create table Organization (
-  id integer primary key,
+  id integer primary key autoincrement,
   name text not null,
   slug text not null unique,
   logo text,
