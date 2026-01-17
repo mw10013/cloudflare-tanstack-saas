@@ -1,3 +1,4 @@
+import { invariant } from "@epic-web/invariant";
 import { useMutation } from "@tanstack/react-query";
 import {
   createFileRoute,
@@ -26,55 +27,25 @@ export const Route = createFileRoute("/app/$organizationId/billing")({
 
 const getLoaderData = createServerFn({ method: "GET" })
   .inputValidator(z.object({ organizationId: z.string() }))
-  .handler(
-    async ({ data: { organizationId }, context: { authService, env } }) => {
-      const request = getRequest();
-      const subscriptions = await authService.api.listActiveSubscriptions({
-        headers: request.headers,
-        query: { referenceId: organizationId, customerType: "organization" },
-      });
+  .handler(async ({ data: { organizationId }, context: { authService } }) => {
+    const request = getRequest();
+    const subscriptions = await authService.api.listActiveSubscriptions({
+      headers: request.headers,
+      query: { referenceId: organizationId, customerType: "organization" },
+    });
 
-      if (env.ENVIRONMENT === "local") {
-        const dbOrganization = await env.D1.prepare(
-          "select id, name, slug, stripeCustomerId from Organization where id = ?",
-        )
-          .bind(Number(organizationId))
-          .first();
+    const activeSubscription = subscriptions.find(
+      (v) => v.status === "active" || v.status === "trialing",
+    );
 
-        const dbMembers = await env.D1.prepare(
-          "select id, userId, organizationId, role from Member where organizationId = ?",
-        )
-          .bind(Number(organizationId))
-          .all();
-
-        const dbSubscriptions = await env.D1.prepare(
-          "select id, plan, referenceId, stripeCustomerId, stripeSubscriptionId, status, periodStart, periodEnd, trialStart, trialEnd, cancelAtPeriodEnd, seats from Subscription where referenceId = ? order by id desc",
-        )
-          .bind(Number(organizationId))
-          .all();
-
-        console.log("billing loader: org", {
-          organizationId,
-          dbOrganization,
-          dbMembers: dbMembers.results,
-          dbSubscriptions: dbSubscriptions.results,
-          apiSubscriptions: subscriptions,
-        });
-      }
-
-      const activeSubscription = subscriptions.find(
-        (v) => v.status === "active" || v.status === "trialing",
-      );
-
-      return {
-        // `limits` is typed as `Record<string, unknown>` in better-auth's stripe plugin.
-        // TanStack Start server function results must be serializable (no `unknown`), so we omit it.
-        activeSubscription: activeSubscription
-          ? (({ limits: _limits, ...rest }) => rest)(activeSubscription)
-          : undefined,
-      };
-    },
-  );
+    return {
+      // `limits` is typed as `Record<string, unknown>` in better-auth's stripe plugin.
+      // TanStack Start server function results must be serializable (no `unknown`), so we omit it.
+      activeSubscription: activeSubscription
+        ? (({ limits: _limits, ...rest }) => rest)(activeSubscription)
+        : undefined,
+    };
+  });
 
 function RouteComponent() {
   const { activeSubscription } = Route.useLoaderData();
@@ -137,20 +108,36 @@ function SubscriptionCard({
   });
 
   const cancelSubscriptionMutation = useMutation({
-    mutationFn: () =>
-      cancelSubscriptionServerFn({
-        data: { organizationId, subscriptionId: subscription.id },
-      }),
+    mutationFn: () => {
+      invariant(
+        subscription.stripeSubscriptionId,
+        "Missing stripeSubscriptionId",
+      );
+      return cancelSubscriptionServerFn({
+        data: {
+          organizationId,
+          subscriptionId: subscription.stripeSubscriptionId,
+        },
+      });
+    },
     onSuccess: (data) => {
       window.location.href = data.url;
     },
   });
 
   const restoreSubscriptionMutation = useMutation({
-    mutationFn: () =>
-      restoreSubscriptionServerFn({
-        data: { organizationId, subscriptionId: subscription.id },
-      }),
+    mutationFn: () => {
+      invariant(
+        subscription.stripeSubscriptionId,
+        "Missing stripeSubscriptionId",
+      );
+      return restoreSubscriptionServerFn({
+        data: {
+          organizationId,
+          subscriptionId: subscription.stripeSubscriptionId,
+        },
+      });
+    },
     onSuccess: () => {
       void router.invalidate();
     },
