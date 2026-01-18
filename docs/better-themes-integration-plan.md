@@ -1,46 +1,40 @@
 # Better Themes Integration Plan
 
-## Reference Findings
+## TanStack Start Guidance (Official Docs)
 
-- `better-themes` provides `ThemeProvider` and `useTheme` for React apps, with SSR-safe inline script to prevent flash and support for system theme detection, storage sync, and configurable attributes.
-- For TanStack Start or Vite, usage is via `import { ThemeProvider } from "better-themes"` (not the RSC entry), and the HTML root should include `suppressHydrationWarning`.
-- The provider can control `class` or `data-*` attributes; `class` matches the existing Tailwind dark mode strategy.
+- Wrap the app with `ThemeProvider` in `routes/__root.tsx` using the default export (`better-themes`).
+- Add `suppressHydrationWarning` to the `<html>` element.
+- Use `attribute="class"` and `disableTransitionOnChange` for Tailwind class-based themes.
+- Theme switcher examples use `useHydrated` from `@tanstack/react-router` to avoid mismatches before hydration.
 
 ## Current Codebase State
 
 - `src/routes/__root.tsx` renders the root document and currently hard-codes `className="dark"` on `<body>`.
-- Tailwind styles use the `.dark` class and `@custom-variant dark`, so a class-based theme switcher is appropriate.
-- `next-themes` is still installed and used in `src/components/ui/sonner.tsx`.
+- Tailwind styles use the `.dark` class and `@custom-variant dark`, so a class-based provider is required.
 - No global theme provider is set up at the app root.
 
-## Integration Approach
+## Integration Goals
 
-- Use `ThemeProvider` at the root document level so the inline theme script runs before hydration and the hook is available throughout the app.
-- Configure the provider with `attribute="class"` to keep Tailwind dark mode behavior intact.
-- Remove the hard-coded `dark` class on `<body>` so themes can be set dynamically.
-- Replace `next-themes` usage with `better-themes` and remove the dependency once all usage is migrated.
-- Add a theme switcher component in the marketing or app shell as needed, using the `useTheme` hook.
+- Ensure SSR-safe theme initialization (no flash on load).
+- Preserve Tailwind dark mode behavior using class attributes.
+- Keep unused theme tooling (Sonner/next-themes) untouched as requested.
 
 ## Step-by-Step Plan
 
-1. **Root document setup**
-   - Update `src/routes/__root.tsx` to wrap the document body in `ThemeProvider` with `attribute="class"` and `disableTransitionOnChange` (optional).
-   - Add `suppressHydrationWarning` to the `<html>` element.
-   - Remove the `dark` class from `<body>` and keep the remaining base classes.
+1. **Root document integration**
+   - Update `src/routes/__root.tsx` to wrap the document body with `ThemeProvider`.
+   - Add `suppressHydrationWarning` to `<html>`.
+   - Remove the hard-coded `dark` class from `<body>` so the provider controls it.
 
-2. **Replace theme hook usage**
-   - Swap `useTheme` import in `src/components/ui/sonner.tsx` from `next-themes` to `better-themes`.
-   - Ensure the Sonner `theme` prop still receives `"light" | "dark" | "system"`.
-   - Remove the `next-themes` dependency from `package.json` once no longer referenced.
+2. **Theme switcher component (shadcn-based)**
+   - Follow the `refs/better-themes/examples/theme-switchers/src/shadcn/radio-switcher.tsx` pattern.
+   - Implement the switcher with shadcn `RadioGroup`, `RadioGroupItem`, and `Label` components plus Lucide icons.
+   - Use `useTheme` and a hydrated guard (`useHydrated` or a mounted flag) before reading theme state.
+   - Place it in the marketing header (`src/routes/_mkt.tsx`) next to auth buttons.
 
-3. **Add a theme switcher component**
-   - Create a new UI component (likely under `src/components`) that uses `useTheme` to toggle `light`, `dark`, and `system`.
-   - Reuse patterns from `refs/better-themes/examples/theme-switchers/src/shadcn` to align with the existing shadcn UI stack.
-   - Insert the switcher into the marketing header (`src/routes/_mkt.tsx`) or app shell depending on product requirements.
-
-4. **Optional customization**
-   - If supporting more than light/dark, set `themes` and `value` props on `ThemeProvider` and define matching CSS variables in `src/styles.css`.
-   - If CSP headers are enforced, supply a `nonce` to `ThemeProvider` and allow the inline script.
+3. **Optional configuration**
+   - If additional themes are needed, configure `themes` and `value` props in `ThemeProvider` and add matching CSS variables in `src/styles.css`.
+   - If CSP is enforced, pass `nonce` into `ThemeProvider` so the inline script is allowed.
 
 ## Suggested Default Configuration
 
@@ -49,8 +43,8 @@
 - `disableTransitionOnChange`: `true`
 - `storageKey`: `"theme"` (default)
 
-## Validation
+## Validation Checklist
 
-- Verify hydration with no theme flash on first load.
-- Toggle theme and ensure the `dark` class updates on the `<html>` element.
-- Confirm the Sonner toaster theme matches the current theme.
+- Initial load does not flash incorrect theme.
+- Theme changes update the `class` on `<html>` correctly.
+- Hydration runs without warnings after adding `suppressHydrationWarning`.
