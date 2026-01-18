@@ -157,7 +157,11 @@ const createStripePom = ({
       (await switchElement.getAttribute("aria-checked")) === "true";
 
     if (isAnnual !== isCurrentlyAnnual) {
-      await switchElement.dispatchEvent("click");
+      await switchElement.click();
+      await expect(switchElement).toHaveAttribute(
+        "aria-checked",
+        isAnnual ? "true" : "false",
+      );
     }
 
     await page.getByTestId(plan.name).click();
