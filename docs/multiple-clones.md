@@ -33,38 +33,36 @@ Each clone keeps its own `.git` refs/index and working tree, so you can run diff
 
 ## Handling parallel dev ports
 
-The clones need different ports but run from the same codebase. Here are concrete approaches:
+- Copy the primary `.env` to each clone and edit the `PORT=<unique>` entry (primary stays on `3000`, clones can increment from `3001`).
+- Keep other settings the same; accept manual sync of shared values until automation is necessary.
+- `pnpm dev` now reads `PORT`, so servers default to the clone-specific port. Capture the assignments so Playwright, Stripe CLI, Wrangler, etc., point where expected.
+- Record `PLAYWRIGHT_BASE_URL` in `.env` if you prefer overriding the base URL directly instead of deriving it from `PORT`.
 
-1. `.env.local` per clone (recommended)
-   - Copy the primary `.env` into `.env.local` within each clone and override only the port variables (`VITE_APP_DEV_PORT`, `BASE_URL`, `PLAYWRIGHT_BASE_URL`, `STRIPE_LISTEN_PORT`, etc.).
-   - Tools that load `.env.local` (Vite, Wrangler, Playwright) pick up the overrides automatically.
-   - Keeps base settings shared via `.env` while letting each clone override just the values that need to change.
+## Port numbering guidance
 
-2. Explicit CLI/env overrides
-   - Start the server with `PORT=3001 pnpm dev -- --port 3001` and set the same values in the shell for other tools before running them.
-   - Works even if a tool ignores `.env.local`, but you must remember to set the env for every command and keep the values consistent.
+- Primary repo stays on `3000` for compatibility with existing scripts.
+- Clones should increment from `3001` (or another contiguous block) rather than jumping to `4000`; smaller steps keep the list short and predictable and makes it easier to remember which clone is which. Reserve a block per clone so they never collide even when all run simultaneously.
+- If the primary port ever shifts, update this doc and every `.env` copy in lockstep.
 
-3. Shared `.env` + clone-specific override files
-   - Symlink each clone’s `.env` back to the primary (if your OS supports it) and keep clone-specific overrides in `.env.local` or another file that contains only the port.
-   - Saves duplication but adds a dependency on the symlink; deleting the primary then affects clones.
+## Port flow map
 
-4. Wrapper aliases/scripts (optional)
-   - If you want a single command, create an alias like `ctss-clone1` that exports the port and runs `pnpm dev`.
-   - Useful for automation but not strictly necessary—you already plan to copy `.env.local` values.
+| Concern           | File                            | How to make it port-aware                                                                                                                                                              |
+| ----------------- | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Dev server        | `package.json` `dev` script     | Remove `--port 3000` so `pnpm dev` respects `PORT`, or wrap the script (`PORT=${PORT:-3000} pnpm dev`).                                                                                |
+| Playwright        | `playwright.config.ts`          | Replace the hardcoded `http://localhost:3000` values with `http://localhost:${PORT:-3000}` or read `PLAYWRIGHT_BASE_URL` from `.env`.                                                  |
+| Integration tests | `test/integration/auth.test.ts` | Replace the literal `http://localhost:3000` with an env-driven base URL (e.g., `process.env.PLAYWRIGHT_BASE_URL`).                                                                     |
+| Stripe CLI        | `package.json` `stripe:listen*` | Build the forward URL from `PORT` (`http://localhost:${PORT:-3000}/…`).                                                                                                                |
+| Wrangler config   | `wrangler.jsonc`                | Avoid hardcoding `http://localhost:3000`; inject the current port via `.env` or clone-specific config so `BETTER_AUTH_URL` stays accurate locally.                                     |
+| Typegen           | `worker-configuration.d.ts`     | Run `wrangler types --strict-vars=false` so env vars like `BETTER_AUTH_URL` stay typed as `string` instead of `http://localhost:3000`, removing the literal port from generated types. |
 
-### Trade-offs
+## Playwright question
 
-- `.env.local` per clone keeps tooling consistent and is easy to document; it is resilient to restarts and doesn’t rely on remembering to pass `PORT` each time.
-- CLI overrides avoid touching files but impose a manual step every time you start the server or related tooling.
-- Symlinks reduce duplication but create tight coupling; drop them only if you are prepared to manage the dependency on the primary repo.
+- Update `playwright.config.ts` to derive `url`/`baseURL` from `.env` (e.g., `PLAYWRIGHT_BASE_URL=http://localhost:${PORT}`) so each clone can point to its own server without touching the config directly.
 
-## Environment/caching notes
+## Wrangler / typegen question
 
-- Copy the existing `.env` file into each clone so base settings are shared. Update only the specific overrides either via `.env.local` or CLI env vars.
-- Ensure `.env.local` (or your override mechanism) is ignored by Git so each clone can use its own ports without polluting the upstream.
+- Use `wrangler types --strict-vars=false` (or configure `wrangler.jsonc`) so `BETTER_AUTH_URL` stays typed as `string` rather than a literal union. That keeps the generated types usable across clones and avoids embedding a clone-specific port in tooling. Ensure the `PORT` from `.env` still maps to whatever `wrangler` or your helper scripts load at runtime.
 
-## Questions still open
+## Follow-up questions
 
-- Do any tools in the stack bypass `.env.local` and need manual port injection?
-- Do we want to record which ports each clone uses in this doc for quick reference?
-- Should we document how to sync `.env` changes across clones when the base file is updated?
+- (Omitted as requested.)
