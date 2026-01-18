@@ -5,8 +5,8 @@ export async function resetDb(resetFn?: (db: D1Database) => Promise<void>) {
     ...["Session", "Member", "Invitation", "Verification", "Organization"].map(
       (table) => env.D1.prepare(`delete from ${table}`),
     ),
-    env.D1.prepare(`delete from Account where id <> 1`),
-    env.D1.prepare(`delete from User where id <> 1`),
+    env.D1.prepare(`delete from Account where id <> 'admin'`),
+    env.D1.prepare(`delete from User where id <> 'admin'`),
   ]);
   if (resetFn) await resetFn(env.D1);
 }

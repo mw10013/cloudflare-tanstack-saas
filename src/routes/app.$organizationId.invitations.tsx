@@ -159,7 +159,7 @@ const invite = createServerFn({ method: "POST" })
             `Applying workaround for better-auth createInvitation role bug: expected role ${role}, got ${result.role} for invitation ${result.id}`,
           );
           await repository.updateInvitationRole({
-            invitationId: Number(result.id),
+            invitationId: result.id,
             role,
           });
         }

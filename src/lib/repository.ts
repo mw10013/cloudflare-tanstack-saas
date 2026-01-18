@@ -488,7 +488,7 @@ select json_object(
     invitationId,
     role,
   }: {
-    invitationId: number;
+    invitationId: string;
     role: string;
   }) => {
     await db

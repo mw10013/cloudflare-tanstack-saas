@@ -64,7 +64,6 @@ function createBetterAuthOptions({
     },
     verification: { modelName: "Verification" },
     advanced: {
-      database: { generateId: false, useNumberId: true },
       ipAddress: {
         ipAddressHeaders: ["cf-connecting-ip"],
       },
@@ -187,7 +186,7 @@ function createBetterAuthOptions({
                 .prepare(
                   "select 1 from Member where userId = ? and organizationId = ? and role = 'owner'",
                 )
-                .bind(Number(user.id), Number(referenceId))
+                .bind(user.id, referenceId)
                 .first(),
             );
             console.log(

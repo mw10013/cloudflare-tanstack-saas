@@ -222,7 +222,7 @@ function RouteComponent() {
                       <DropdownMenuItem
                         onClick={() => {
                           void unbanUserServerFn({
-                            data: { userId: String(user.id) },
+                            data: { userId: user.id },
                           }).then(() => router.invalidate());
                         }}
                       >
@@ -233,7 +233,7 @@ function RouteComponent() {
                         onClick={() => {
                           setBanDialog({
                             isOpen: true,
-                            userId: String(user.id),
+                            userId: user.id,
                           });
                         }}
                       >
@@ -243,7 +243,7 @@ function RouteComponent() {
                     <DropdownMenuItem
                       onClick={() => {
                         void impersonateUserServerFn({
-                          data: { userId: String(user.id) },
+                          data: { userId: user.id },
                         });
                       }}
                     >

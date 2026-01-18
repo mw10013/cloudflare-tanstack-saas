@@ -134,7 +134,7 @@ function InvitationItem({
   const acceptInvitationMutation = useMutation({
     mutationFn: () =>
       acceptInvitationServerFn({
-        data: { invitationId: String(invitation.id) },
+        data: { invitationId: invitation.id },
       }),
     onSuccess: () => {
       void router.invalidate();
@@ -144,7 +144,7 @@ function InvitationItem({
   const rejectInvitationMutation = useMutation({
     mutationFn: () =>
       rejectInvitationServerFn({
-        data: { invitationId: String(invitation.id) },
+        data: { invitationId: invitation.id },
       }),
     onSuccess: () => {
       void router.invalidate();

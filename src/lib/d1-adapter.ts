@@ -11,18 +11,6 @@ import { createAdapterFactory } from "better-auth/adapters";
  *
  * Better-Auth does not seem to serialize Date objects as text in where clauses when `supportsDates` is false.
  * We handle this by serializing Date objects to ISO strings in `where` processing.
- *
- * Better-Auth with the Organization plugin does not seem to handle `activeOrganizationId` data transformation.
- * The Organization plugin works with `activeOrganizationId` as a string, but the SQLite schema has it typed as a number.
- * We handle this by transforming `activeOrganizationId` in the `customTransformOutput` function.
- *
- * Better-Auth Stripe expects `referenceId` as a string, while our Subscription table stores it as an integer.
- * We normalize it to a string in `customTransformOutput` to keep database schema intact.
- *
- * Organization IDs use autoincrement because Stripe customer search keys are
- * based on organizationId metadata, and our e2e delete flow removes Stripe
- * customers out-of-band. Stripe search is eventually consistent, so reusing
- * org IDs can cause Better Auth to match stale Stripe customers during tests.
  */
 
 function adapt({
@@ -139,24 +127,14 @@ export const d1Adapter = (db: D1Database | D1DatabaseSession) => {
     config: {
       adapterId: "d1-adapter",
       adapterName: "D1 Adapter",
-      supportsNumericIds: true,
+      supportsNumericIds: false,
       supportsDates: false,
       supportsBooleans: false,
-      disableIdGeneration: true,
+      disableIdGeneration: false,
       debugLogs: false,
       // debugLogs: {
       //   deleteMany: true,
       // },
-      customTransformOutput: ({ field, data }) => {
-        if (field === "activeOrganizationId" && typeof data === "number") {
-          return String(data);
-        }
-        if (field === "referenceId" && typeof data === "number") {
-          return String(data);
-        }
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-        return data;
-      },
     },
     adapter: () => {
       const create: CustomAdapter["create"] = async ({
@@ -209,7 +187,7 @@ export const d1Adapter = (db: D1Database | D1DatabaseSession) => {
       }: {
         model: string;
         where?: CleanedWhere[];
-        limit: number;
+        limit?: number;
         sortBy?: {
           field: string;
           direction: "asc" | "desc";
@@ -220,8 +198,11 @@ export const d1Adapter = (db: D1Database | D1DatabaseSession) => {
         let sql = `select * from ${adapted.model}`;
         if (adapted.whereClause) sql += ` where ${adapted.whereClause}`;
         if (sortBy) sql += ` order by ${sortBy.field} ${sortBy.direction}`;
-        sql += ` limit ${String(limit)}`;
-        if (offset) sql += ` offset ${String(offset)}`;
+        if (limit !== undefined) sql += ` limit ${String(limit)}`;
+        if (offset !== undefined) {
+          if (limit === undefined) sql += " limit -1";
+          sql += ` offset ${String(offset)}`;
+        }
         const result = await db
           .prepare(sql)
           .bind(...adapted.whereValues)
