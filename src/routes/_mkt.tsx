@@ -2,6 +2,7 @@ import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { createServerFn, useServerFn } from "@tanstack/react-start";
 import { siGithub } from "simple-icons";
 import { AppLogoIcon } from "@/components/app-logo-icon";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { signOutServerFn } from "@/lib/auth-service";
@@ -67,6 +68,7 @@ function Header() {
         </div>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-2">
+            <ThemeSwitcher />
             <GitHubRepoLink />
             <Separator orientation="vertical" className="mx-1 h-6 min-h-6" />
             {sessionUser ? (
