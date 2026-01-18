@@ -44,7 +44,7 @@ describe("better-auth d1Adapter", () => {
       SHOULD_FIND_MANY_WITH_CONTAINS_OPERATOR: false,
       SHOULD_SEARCH_USERS_WITH_STARTS_WITH: false,
       SHOULD_SEARCH_USERS_WITH_ENDS_WITH: false,
-      SHOULD_PREFER_GENERATE_ID_IF_PROVIDED: true,
+      SHOULD_PREFER_GENERATE_ID_IF_PROVIDED: false,
     },
   });
 });
