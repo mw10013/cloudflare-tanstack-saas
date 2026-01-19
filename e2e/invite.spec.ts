@@ -52,7 +52,7 @@ test.describe("invite", () => {
   users.forEach((user) => {
     test(`invite from ${user.email}`, async ({ page, baseURL }) => {
       invariant(baseURL, "Missing baseURL");
-      const pom = new InvitePom({ page, baseURL });
+      const pom = createInvitePom({ page, baseURL });
 
       await pom.login({ email: user.email });
       await pom.inviteUsers({ emails: user.invitees.map((i) => i.email) });
@@ -76,7 +76,7 @@ test.describe("invite", () => {
     );
     test(`handle invites for ${user.email}`, async ({ page, baseURL }) => {
       invariant(baseURL, "Missing baseURL");
-      const pom = new InvitePom({ page, baseURL });
+      const pom = createInvitePom({ page, baseURL });
 
       await pom.login({ email: user.email });
       if (toAccept.length > 0) {
@@ -99,7 +99,7 @@ test.describe("invite", () => {
     const expectedCount = 1 + acceptedCount;
     test(`verify member count for ${user.email}`, async ({ page, baseURL }) => {
       invariant(baseURL, "Missing baseURL");
-      const pom = new InvitePom({ page, baseURL });
+      const pom = createInvitePom({ page, baseURL });
 
       await pom.login({ email: user.email });
       await expect(page.getByTestId("member-count")).toHaveText(
@@ -109,70 +109,86 @@ test.describe("invite", () => {
   });
 });
 
-class InvitePom {
+const createInvitePom = ({
+  page,
+  baseURL,
+}: {
   readonly page: Page;
   readonly baseURL: string;
+}) => {
+  invariant(baseURL.endsWith("/"), "baseURL must have a trailing slash");
 
-  constructor({ page, baseURL }: { page: Page; baseURL: string }) {
-    invariant(baseURL.endsWith("/"), "baseURL must have a trailing slash");
-    this.page = page;
-    this.baseURL = baseURL;
-  }
+  const login = async ({ email }: { email: string }) => {
+    await page.goto("/login");
+    await page.getByRole("textbox", { name: "Email" }).click();
+    await page.getByRole("textbox", { name: "Email" }).fill(email);
+    await page.getByRole("button", { name: "Send magic link" }).click();
+    await page.getByRole("link", { name: /magic-link/ }).click();
+    await page.waitForURL(/\/app\//);
+  };
 
-  async login({ email }: { email: string }) {
-    await this.page.goto("/login");
-    await this.page.getByRole("textbox", { name: "Email" }).click();
-    await this.page.getByRole("textbox", { name: "Email" }).fill(email);
-    await this.page.getByRole("button", { name: "Send magic link" }).click();
-    await this.page.getByRole("link", { name: /magic-link/ }).click();
-    await this.page.waitForURL(/\/app\//);
-  }
-
-  async inviteUsers({ emails }: { emails: string[] }) {
-    await this.page.getByTestId("sidebar-invitations").click();
-    await this.page.waitForURL(/invitations/);
-    await this.page
+  const inviteUsers = async ({ emails }: { emails: string[] }) => {
+    await page.getByTestId("sidebar-invitations").click();
+    await page.waitForURL(/invitations/);
+    await page
       .getByRole("textbox", { name: "Email Addresses" })
       .fill(emails.join(", "));
-    await this.page
-      .locator("main")
-      .getByRole("button", { name: "Invite" })
-      .click();
+    await page.locator("main").getByRole("button", { name: "Invite" }).click();
     await expect(
-      this.page.getByRole("textbox", { name: "Email Addresses" }),
+      page.getByRole("textbox", { name: "Email Addresses" }),
     ).toHaveValue("");
-  }
+  };
 
-  async verifyInvitations({ expectedEmails }: { expectedEmails: string[] }) {
-    await expect(this.page.getByTestId("invitations-list")).toBeVisible();
+  const verifyInvitations = async ({
+    expectedEmails,
+  }: {
+    expectedEmails: string[];
+  }) => {
+    await expect(page.getByTestId("invitations-list")).toBeVisible();
     for (const email of expectedEmails) {
       await expect(
-        this.page.getByTestId("invitations-list").getByText(email),
+        page.getByTestId("invitations-list").getByText(email),
       ).toBeVisible();
     }
-  }
+  };
 
-  async acceptInvitations({ expectedEmails }: { expectedEmails: string[] }) {
+  const acceptInvitations = async ({
+    expectedEmails,
+  }: {
+    expectedEmails: string[];
+  }) => {
     // Invitations are accepted on the main app page, not the invitations page
     // After login, we're already on /app/ which shows pending invitations
     for (const email of expectedEmails) {
-      await this.page
+      await page
         .getByRole("button", { name: new RegExp(`accept.*${email}`, "i") })
         .click();
     }
     for (const email of expectedEmails) {
-      await expect(this.page.getByText(`Inviter: ${email}`)).not.toBeVisible();
+      await expect(page.getByText(`Inviter: ${email}`)).not.toBeVisible();
     }
-  }
+  };
 
-  async rejectInvitations({ expectedEmails }: { expectedEmails: string[] }) {
+  const rejectInvitations = async ({
+    expectedEmails,
+  }: {
+    expectedEmails: string[];
+  }) => {
     for (const email of expectedEmails) {
-      await this.page
+      await page
         .getByRole("button", { name: new RegExp(`reject.*${email}`, "i") })
         .click();
     }
     for (const email of expectedEmails) {
-      await expect(this.page.getByText(`Inviter: ${email}`)).not.toBeVisible();
+      await expect(page.getByText(`Inviter: ${email}`)).not.toBeVisible();
     }
-  }
-}
+  };
+
+  return {
+    login,
+    inviteUsers,
+    verifyInvitations,
+    acceptInvitations,
+    rejectInvitations,
+  };
+};
