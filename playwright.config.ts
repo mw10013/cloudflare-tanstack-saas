@@ -1,12 +1,14 @@
+import path from "path";
+import { fileURLToPath } from "url";
 import { defineConfig, devices } from "@playwright/test";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /**
  * Read environment variables from file.
- * https://github.com/motdotla/dotenv
+ * Using Node.js built-in process.loadEnvFile (Node 20.12+)
  */
-// import dotenv from 'dotenv';
-// import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
+process.loadEnvFile(path.resolve(__dirname, ".env"));
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -26,13 +28,13 @@ export default defineConfig({
 
   webServer: {
     command: "pnpm dev",
-    url: "http://localhost:3000/",
+    url: `http://localhost:${process.env.PORT}`,
     reuseExistingServer: !process.env.CI,
     stdout: "pipe",
   },
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    baseURL: "http://localhost:3000/",
+    baseURL: `http://localhost:${process.env.PORT}/`,
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",

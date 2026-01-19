@@ -25,7 +25,10 @@ async function signInMagicLink({ email }: { email: string }) {
   if (!magicLink) throw new Error("Expected demo:magicLink KV key");
 
   return {
-    magicLink: magicLink.replace("http://localhost:3000", "http://example.com"),
+    magicLink: magicLink.replace(
+      process.env.BETTER_AUTH_URL,
+      "http://example.com",
+    ),
   };
 }
 
