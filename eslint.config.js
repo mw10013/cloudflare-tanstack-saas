@@ -57,6 +57,7 @@ export default defineConfig(
     files: ["src/**/*.tsx", "src/**/*.ts"],
     ...reactPlugin.configs.flat.recommended,
     ...reactPlugin.configs.flat["jsx-runtime"],
+    ...reactHooks.configs.flat.recommended,
     languageOptions: {
       ...reactPlugin.configs.flat.recommended.languageOptions,
     },
@@ -65,10 +66,9 @@ export default defineConfig(
         version: "detect",
       },
     },
-    ...reactHooks.configs.flat.recommended,
     plugins: {
       ...reactPlugin.configs.flat.recommended.plugins,
-      "react-hooks": reactHooks,
+      ...reactHooks.configs.flat.recommended.plugins,
     },
   },
 );
