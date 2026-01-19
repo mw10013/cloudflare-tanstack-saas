@@ -41,7 +41,8 @@
     "refs:crrbuis": "rm -rf refs/crrbuis && mkdir -p refs/crrbuis && curl -L https://github.com/mw10013/cloudflare-react-router-bui-saas/archive/refs/heads/main.tar.gz | tar -xz -C refs/crrbuis --strip-components=1",
     "refs:better-auth": "rm -rf refs/better-auth && mkdir -p refs/better-auth && curl -L https://github.com/better-auth/better-auth/archive/refs/tags/v1.4.12.tar.gz | tar -xz -C refs/better-auth --strip-components=1",
     "refs:saas-kit": "rm -rf refs/saas-kit && mkdir -p refs/saas-kit && curl -L https://github.com/backpine/saas-kit/archive/refs/heads/main.tar.gz | tar -xz -C refs/saas-kit --strip-components=1",
-    "refs:better-themes": "rm -rf refs/better-themes && mkdir -p refs/better-themes && curl -L https://github.com/SaviruFr/better-themes/archive/refs/tags/v1.1.0.tar.gz | tar -xz -C refs/better-themes --strip-components=1"
+    "refs:better-themes": "rm -rf refs/better-themes && mkdir -p refs/better-themes && curl -L https://github.com/SaviruFr/better-themes/archive/refs/tags/v1.1.0.tar.gz | tar -xz -C refs/better-themes --strip-components=1",
+    "clone:links": "[ ! -e refs ] && ln -s ../cloudflare-tanstack-saas/refs refs; [ ! -e todo.md ] && ln -s ../cloudflare-tanstack-saas/todo.md todo.md"
   },
   "dependencies": {
     "@base-ui/react": "1.0.0",

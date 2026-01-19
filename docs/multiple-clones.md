@@ -29,6 +29,16 @@ git clone --reference cloudflare-tanstack-saas https://github.com/mw10013/cloudf
 
 Each clone has isolated `.git` refs and working tree.
 
+## Setting up shared links
+
+After cloning, run the setup script to create symlinks to shared files from the primary repository:
+
+```bash
+pnpm run clone:links
+```
+
+This creates symlinks for `refs/` and `todo.md` pointing to the primary repo's versions, avoiding duplication.
+
 ## Handling parallel dev ports
 
 - Copy primary `.env` to each clone.
