@@ -65,12 +65,10 @@ export default defineConfig(
         version: "detect",
       },
     },
+    ...reactHooks.configs.flat.recommended,
     plugins: {
+      ...reactPlugin.configs.flat.recommended.plugins,
       "react-hooks": reactHooks,
-    },
-    rules: {
-      "react-hooks/rules-of-hooks": "error",
-      "react-hooks/exhaustive-deps": "warn",
     },
   },
 );
