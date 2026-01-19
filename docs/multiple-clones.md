@@ -34,6 +34,7 @@ Each clone has isolated `.git` refs and working tree.
 - Copy primary `.env` to each clone.
 - Set unique `PORT` in each `.env` (incrementing numbers).
 - No specific port values; clones use incrementing ports.
+- `BETTER_AUTH_URL` must align with `PORT`.
 
 ## Port flow map
 
