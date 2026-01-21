@@ -2,6 +2,7 @@ import type { APIRequestContext, Page } from "@playwright/test";
 import { invariant } from "@epic-web/invariant";
 import { expect, test } from "@playwright/test";
 import { planData } from "@/lib/domain";
+import { uniquifyEmail } from "./utils";
 
 const emailPrefix = "stripe-";
 
@@ -9,12 +10,16 @@ test.describe("subscribe", () => {
   planData
     .flatMap((plan) => [
       {
-        email: `${emailPrefix}${plan.monthlyPriceLookupKey.toLowerCase()}@e2e.com`,
+        email: uniquifyEmail(
+          `${emailPrefix}${plan.monthlyPriceLookupKey.toLowerCase()}@e2e.com`,
+        ),
         intent: plan.monthlyPriceLookupKey,
         planName: plan.name,
       },
       {
-        email: `${emailPrefix}${plan.annualPriceLookupKey.toLowerCase()}@e2e.com`,
+        email: uniquifyEmail(
+          `${emailPrefix}${plan.annualPriceLookupKey.toLowerCase()}@e2e.com`,
+        ),
         intent: plan.annualPriceLookupKey,
         planName: plan.name,
       },
@@ -37,12 +42,16 @@ test.describe("subscribe/cancel", () => {
   planData
     .flatMap((plan) => [
       {
-        email: `${emailPrefix}${plan.monthlyPriceLookupKey.toLowerCase()}-cancel@e2e.com`,
+        email: uniquifyEmail(
+          `${emailPrefix}${plan.monthlyPriceLookupKey.toLowerCase()}-cancel@e2e.com`,
+        ),
         intent: plan.monthlyPriceLookupKey,
         planName: plan.name,
       },
       {
-        email: `${emailPrefix}${plan.annualPriceLookupKey.toLowerCase()}-cancel@e2e.com`,
+        email: uniquifyEmail(
+          `${emailPrefix}${plan.annualPriceLookupKey.toLowerCase()}-cancel@e2e.com`,
+        ),
         intent: plan.annualPriceLookupKey,
         planName: plan.name,
       },
@@ -67,21 +76,27 @@ test.describe("subscribe/upgrade", () => {
   [planData, [...planData].reverse()]
     .flatMap(([plan, plan1]) => [
       {
-        email: `${emailPrefix}${plan.monthlyPriceLookupKey.toLowerCase()}-${plan.monthlyPriceLookupKey.toLowerCase()}-upgrade@e2e.com`,
+        email: uniquifyEmail(
+          `${emailPrefix}${plan.monthlyPriceLookupKey.toLowerCase()}-${plan.monthlyPriceLookupKey.toLowerCase()}-upgrade@e2e.com`,
+        ),
         intent: plan.monthlyPriceLookupKey,
         planName: plan.name,
         intent1: plan.annualPriceLookupKey,
         planName1: plan.name,
       },
       {
-        email: `${emailPrefix}${plan.monthlyPriceLookupKey.toLowerCase()}-${plan1.monthlyPriceLookupKey.toLowerCase()}-upgrade@e2e.com`,
+        email: uniquifyEmail(
+          `${emailPrefix}${plan.monthlyPriceLookupKey.toLowerCase()}-${plan1.monthlyPriceLookupKey.toLowerCase()}-upgrade@e2e.com`,
+        ),
         intent: plan.monthlyPriceLookupKey,
         planName: plan.name,
         intent1: plan1.monthlyPriceLookupKey,
         planName1: plan1.name,
       },
       {
-        email: `${emailPrefix}${plan.monthlyPriceLookupKey.toLowerCase()}-${plan1.annualPriceLookupKey.toLowerCase()}-upgrade@e2e.com`,
+        email: uniquifyEmail(
+          `${emailPrefix}${plan.monthlyPriceLookupKey.toLowerCase()}-${plan1.annualPriceLookupKey.toLowerCase()}-upgrade@e2e.com`,
+        ),
         intent: plan.monthlyPriceLookupKey,
         planName: plan.name,
         intent1: plan1.annualPriceLookupKey,

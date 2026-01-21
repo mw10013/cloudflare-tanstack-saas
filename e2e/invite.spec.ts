@@ -1,41 +1,42 @@
 import type { Page } from "@playwright/test";
 import { invariant } from "@epic-web/invariant";
 import { expect, test } from "@playwright/test";
+import { uniquifyEmail } from "./utils";
 
 const users: {
   email: string;
   invitees: { email: string; action?: "accept" | "reject" }[];
 }[] = [
   {
-    email: "invite@e2e.com",
+    email: uniquifyEmail("invite@e2e.com"),
     invitees: [
-      { email: "invite1@e2e.com", action: "accept" },
-      { email: "invite2@e2e.com", action: "accept" },
-      { email: "invite3@e2e.com", action: "accept" },
+      { email: uniquifyEmail("invite1@e2e.com"), action: "accept" },
+      { email: uniquifyEmail("invite2@e2e.com"), action: "accept" },
+      { email: uniquifyEmail("invite3@e2e.com"), action: "accept" },
     ],
   },
   {
-    email: "invite1@e2e.com",
+    email: uniquifyEmail("invite1@e2e.com"),
     invitees: [
-      { email: "invite@e2e.com" },
-      { email: "invite2@e2e.com" },
-      { email: "invite3@e2e.com" },
+      { email: uniquifyEmail("invite@e2e.com") },
+      { email: uniquifyEmail("invite2@e2e.com") },
+      { email: uniquifyEmail("invite3@e2e.com") },
     ],
   },
   {
-    email: "invite2@e2e.com",
+    email: uniquifyEmail("invite2@e2e.com"),
     invitees: [
-      { email: "invite@e2e.com", action: "reject" },
-      { email: "invite1@e2e.com", action: "reject" },
-      { email: "invite3@e2e.com", action: "reject" },
+      { email: uniquifyEmail("invite@e2e.com"), action: "reject" },
+      { email: uniquifyEmail("invite1@e2e.com"), action: "reject" },
+      { email: uniquifyEmail("invite3@e2e.com"), action: "reject" },
     ],
   },
   {
-    email: "invite3@e2e.com",
+    email: uniquifyEmail("invite3@e2e.com"),
     invitees: [
-      { email: "invite@e2e.com", action: "accept" },
-      { email: "invite1@e2e.com", action: "reject" },
-      { email: "invite2@e2e.com" },
+      { email: uniquifyEmail("invite@e2e.com"), action: "accept" },
+      { email: uniquifyEmail("invite1@e2e.com"), action: "reject" },
+      { email: uniquifyEmail("invite2@e2e.com") },
     ],
   },
 ];
