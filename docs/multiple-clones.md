@@ -45,6 +45,7 @@ This creates symlinks for `refs/` and `todo.md` pointing to the primary repo's v
 - Set unique `PORT` in each `.env` (incrementing numbers).
 - No specific port values; clones use incrementing ports.
 - `BETTER_AUTH_URL` must align with `PORT`.
+- E2E tests uniquify emails with `-PORT` to avoid cross-clone collisions.
 
 ## Port flow map
 
