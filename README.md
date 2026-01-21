@@ -3,7 +3,7 @@
 ### Stripe
 
 - Install the [Stripe CLI](https://stripe.com/docs/stripe-cli).
-- Go to stripe and create a sandbox for testing named `ctss-int`
+- Go to stripe and create a sandbox for testing named `tcs-int`
   - Remember secret key for `STRIPE_SECRET_KEY` environment variable.
 - Create a stripe webhook
   - Endpoint URL: `https://dummy.com/api/auth/stripe/webhook` (This is dummy placeholder for local dev)
@@ -19,7 +19,7 @@
 ```
 pnpm i
 pnpm d1:reset
-stripe login --project-name=ctss-int
+stripe login --project-name=tcs-int
 pnpm stripe:listen
 # copy webhook signing secret to STRIPE_WEBHOOK_SECRET in .env
 pnpm dev
@@ -62,17 +62,17 @@ pnpm test:e2e
 
 ## Deploy
 
-- pnpm exec wrangler kv namespace create ctss-kv-production
+- pnpm exec wrangler kv namespace create tcs-kv-production
 - Update wrangler.jsonc production kv_namespaces
 - pnpm d1:reset:PRODUCTION
 - pnpm deploy:PRODUCTION
 - pnpm exec wrangler secret put SECRET --env production
-- Workers & Pages Settings: ctss
+- Workers & Pages Settings: tcs
   - Git repository: connect to git repo
   - Build configuration
     - Build command: CLOUDFLARE_ENV=production pnpm build
     - Deploy command: pnpm exec wrangler deploy --env production
-- Storage & databases: ctss-d1-production: Settings
+- Storage & databases: tcs-d1-production: Settings
   - Enable read replication
 
 ## Shadcn with Base UI
@@ -87,4 +87,4 @@ Homepage / Pricing design by [dev-xo](https://github.com/dev-xo). See his [remix
 
 ## License
 
-Licensed under the [MIT License](https://github.com/mw10013/cloudflare-tanstack-saas/blob/main/LICENSE).
+Licensed under the [MIT License](https://github.com/mw10013/tanstack-cloudflare-saas/blob/main/LICENSE).

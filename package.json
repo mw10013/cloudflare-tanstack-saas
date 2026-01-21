@@ -1,5 +1,5 @@
 {
-  "name": "ctss",
+  "name": "tanstack-cloudflare-saas",
   "private": true,
   "type": "module",
   "scripts": {
@@ -23,14 +23,14 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "tail:PRODUCTION": "wrangler tail ctss",
+    "tail:PRODUCTION": "wrangler tail tcs",
     "d1:migrate:list": "wrangler d1 migrations list d1-local --local",
     "d1:migrate:apply": "wrangler d1 migrations apply d1-local --local",
-    "d1:migrate:list:PRODUCTION": "wrangler d1 migrations list ctss-d1-production --env production --remote",
-    "d1:migrate:apply:PRODUCTION": "wrangler d1 migrations apply ctss-d1-production --env production --remote",
+    "d1:migrate:list:PRODUCTION": "wrangler d1 migrations list tcs-d1-production --env production --remote",
+    "d1:migrate:apply:PRODUCTION": "wrangler d1 migrations apply tcs-d1-production --env production --remote",
     "d1:reset": "node scripts/d1-reset.ts",
     "d1:reset:PRODUCTION": "node scripts/d1-reset.ts --env production",
-    "stripe:listen": "source .env && stripe listen --project-name=ctss-int --events checkout.session.completed,customer.subscription.created,customer.subscription.updated,customer.subscription.deleted --forward-to http://localhost:${PORT}/api/auth/stripe/webhook",
+    "stripe:listen": "source .env && stripe listen --project-name=tcs-int --events checkout.session.completed,customer.subscription.created,customer.subscription.updated,customer.subscription.deleted --forward-to http://localhost:${PORT}/api/auth/stripe/webhook",
     "stripe:listen:crrs": "source .env && stripe listen --project-name=crrs-int --events checkout.session.completed,customer.subscription.created,customer.subscription.updated,customer.subscription.deleted --forward-to http://localhost:${PORT}/api/auth/stripe/webhook",
     "refs:shadcn": "rm -rf refs/shadcn && mkdir -p refs/shadcn && curl -L https://github.com/shadcn-ui/ui/archive/refs/tags/shadcn@3.6.2.tar.gz | tar -xz -C refs/shadcn --strip-components=1",
     "refs:tan-form": "rm -rf refs/tan-form && mkdir -p refs/tan-form && curl -L https://github.com/TanStack/form/archive/refs/tags/@tanstack/react-form@1.27.7.tar.gz | tar -xz -C refs/tan-form --strip-components=1",
@@ -44,7 +44,7 @@
     "refs:react-admin": "rm -rf refs/react-admin && mkdir -p refs/react-admin && curl -L https://github.com/marmelab/react-admin/archive/refs/heads/master.tar.gz | tar -xz -C refs/react-admin --strip-components=1",
     "refs:shadcn-admin-kit": "rm -rf refs/shadcn-admin-kit && mkdir -p refs/shadcn-admin-kit && curl -L https://github.com/marmelab/shadcn-admin-kit/archive/refs/heads/main.tar.gz | tar -xz -C refs/shadcn-admin-kit --strip-components=1",
     "refs:better-themes": "rm -rf refs/better-themes && mkdir -p refs/better-themes && curl -L https://github.com/SaviruFr/better-themes/archive/refs/tags/v1.1.0.tar.gz | tar -xz -C refs/better-themes --strip-components=1",
-    "clone:links": "[ ! -e refs ] && ln -s ../cloudflare-tanstack-saas/refs refs; [ ! -e todo.md ] && ln -s ../cloudflare-tanstack-saas/todo.md todo.md"
+    "clone:links": "[ ! -e refs ] && ln -s ../tanstack-cloudflare-saas/refs refs; [ ! -e todo.md ] && ln -s ../tanstack-cloudflare-saas/todo.md todo.md"
   },
   "dependencies": {
     "@base-ui/react": "1.0.0",

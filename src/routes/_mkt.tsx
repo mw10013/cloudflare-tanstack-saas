@@ -46,7 +46,7 @@ function Header() {
         <div className="flex items-center gap-12">
           <a href="/" className="flex items-center gap-1">
             <AppLogoIcon className="size-6 fill-current" />
-            <span className="text-xl font-extrabold">CTSS</span>
+            <span className="text-xl font-extrabold">TCS</span>
             <span className="bg-primary relative top-1 size-1.5" />
           </a>
           <div className="hidden items-center gap-6 md:flex">
@@ -57,7 +57,7 @@ function Header() {
               Pricing
             </Link>
             <a
-              href="https://github.com/mw10013/cloudflare-tanstack-saas"
+              href="https://github.com/mw10013/tanstack-cloudflare-saas"
               target="_blank"
               rel="noopener noreferrer"
               className="data-hovered:text-primary text-muted-foreground font-medium"
@@ -95,7 +95,7 @@ function GitHubRepoLink({ className }: { className?: string }) {
       aria-label="GitHub repo"
       render={
         <a
-          href="https://github.com/mw10013/cloudflare-tanstack-saas"
+          href="https://github.com/mw10013/tanstack-cloudflare-saas"
           target="_blank"
           rel="noopener noreferrer"
         />
@@ -115,7 +115,7 @@ export function Footer() {
         <div className="max-w-md space-y-4 md:col-span-2 lg:col-span-4">
           <a href="/" className="flex items-center gap-1">
             <AppLogoIcon className="size-6 fill-current" />
-            <span className="text-xl font-extrabold">CTSS</span>
+            <span className="text-xl font-extrabold">TCS</span>
             <span className="bg-primary relative top-1 size-1.5" />
           </a>
           <p className="text-muted-foreground text-sm">
@@ -156,7 +156,7 @@ export function Footer() {
           <ul className="space-y-2 text-sm">
             <li>
               <a
-                href="https://github.com/mw10013/cloudflare-tanstack-saas"
+                href="https://github.com/mw10013/tanstack-cloudflare-saas"
                 className="text-muted-foreground data-hovered:text-foreground transition-colors"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -169,7 +169,7 @@ export function Footer() {
       </div>
       <div className="border-border/40 flex flex-col items-center justify-between gap-4 border-t border-dashed pt-8 sm:flex-row">
         <p className="text-muted-foreground text-sm">
-          © 2025 CTSS. Built with ♥ by{" "}
+          © 2025 TCS. Built with ♥ by{" "}
           <a
             href="https://github.com/mw10013"
             target="_blank"

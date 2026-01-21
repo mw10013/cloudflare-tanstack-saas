@@ -1,5 +1,3 @@
-import { Egg } from "lucide-react";
-
-export function AppLogoIcon(props: React.ComponentProps<typeof Egg>) {
-  return <Egg {...props} />;
+export function AppLogoIcon(props: React.ComponentProps<"span">) {
+  return <span {...props}>TCS</span>;
 }

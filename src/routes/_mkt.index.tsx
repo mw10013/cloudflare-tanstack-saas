@@ -53,7 +53,7 @@ function RouteComponent() {
             variant="outline"
             render={
               <a
-                href="https://github.com/mw10013/cloudflare-tanstack-saas"
+                href="https://github.com/mw10013/tanstack-cloudflare-saas"
                 target="_blank"
                 rel="noopener noreferrer"
               />
@@ -422,7 +422,7 @@ function RouteComponent() {
               variant="outline"
               render={
                 <a
-                  href="https://github.com/mw10013/cloudflare-tanstack-saas"
+                  href="https://github.com/mw10013/tanstack-cloudflare-saas"
                   target="_blank"
                   rel="noopener noreferrer"
                 />

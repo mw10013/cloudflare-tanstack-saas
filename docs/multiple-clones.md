@@ -1,19 +1,19 @@
-# Multiple clones of cloudflare-tanstack-saas
+# Multiple clones of tanstack-cloudflare-saas
 
-Tracks sibling repositories next to the primary `cloudflare-tanstack-saas` checkout for parallel development.
+Tracks sibling repositories next to the primary `tanstack-cloudflare-saas` checkout for parallel development.
 
 ## Goals
 
-- Primary repo at `/Users/mw/Documents/src/cloudflare-tanstack-saas`.
+- Primary repo at `/Users/mw/Documents/src/tanstack-cloudflare-saas`.
 - Clones as independent siblings under `/Users/mw/Documents/src/`.
 - Shared git objects via `--reference` for disk savings.
 
 ## Naming
 
-- `cloudflare-tanstack-saas` (primary)
-- `cloudflare-tanstack-saas-clone`
-- `cloudflare-tanstack-saas-clone1`
-- `cloudflare-tanstack-saas-clone2`
+- `tanstack-cloudflare-saas` (primary)
+- `tanstack-cloudflare-saas-clone`
+- `tanstack-cloudflare-saas-clone1`
+- `tanstack-cloudflare-saas-clone2`
 
 Increments suffix for easy enumeration.
 
@@ -22,9 +22,9 @@ Increments suffix for easy enumeration.
 From `/Users/mw/Documents/src`:
 
 ```bash
-git clone --reference cloudflare-tanstack-saas https://github.com/mw10013/cloudflare-tanstack-saas.git cloudflare-tanstack-saas-clone
-git clone --reference cloudflare-tanstack-saas https://github.com/mw10013/cloudflare-tanstack-saas.git cloudflare-tanstack-saas-clone1
-git clone --reference cloudflare-tanstack-saas https://github.com/mw10013/cloudflare-tanstack-saas.git cloudflare-tanstack-saas-clone2
+git clone --reference tanstack-cloudflare-saas https://github.com/mw10013/tanstack-cloudflare-saas.git tanstack-cloudflare-saas-clone
+git clone --reference tanstack-cloudflare-saas https://github.com/mw10013/tanstack-cloudflare-saas.git tanstack-cloudflare-saas-clone1
+git clone --reference tanstack-cloudflare-saas https://github.com/mw10013/tanstack-cloudflare-saas.git tanstack-cloudflare-saas-clone2
 ```
 
 Each clone has isolated `.git` refs and working tree.

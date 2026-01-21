@@ -1,5 +1,5 @@
 {
-  "projectName": "cloudflare-tanstack-saas",
+  "projectName": "tanstack-cloudflare-saas",
   "mode": "file-router",
   "typescript": true,
   "tailwind": true,

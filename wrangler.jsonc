@@ -4,7 +4,7 @@
  */
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "ctss-local",
+  "name": "tcs-local",
   "compatibility_date": "2025-09-17",
   "compatibility_flags": ["nodejs_compat"],
   "account_id": "1422451be59cc2401532ad67d92ae773",
@@ -33,7 +33,7 @@
   ],
   "env": {
     "production": {
-      "name": "ctss",
+      "name": "tcs",
       "vars": {
         "ENVIRONMENT": "production",
         "DEMO_MODE": "true",
@@ -43,7 +43,7 @@
       "d1_databases": [
         {
           "binding": "D1",
-          "database_name": "ctss-d1-production",
+          "database_name": "tcs-d1-production",
           "database_id": "7891d5d6-12d3-4697-8d2e-742141de48fd"
         }
       ],
