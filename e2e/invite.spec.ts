@@ -168,7 +168,11 @@ test.describe("admin invite", () => {
 
     await pom.login({ email: adminInviteScenario.memberEmail });
     await pom.acceptInvitations({
-      expectedEmails: [adminInviteScenario.ownerEmail],
+      expectedEmails: [adminInviteScenario.adminEmail],
+    });
+    await pom.switchOrganization({
+      currentName: getOrganizationName(adminInviteScenario.memberEmail),
+      targetName: ownerOrganizationName,
     });
     await expect(page.getByTestId("member-count")).toHaveText("3");
   });
@@ -202,8 +206,9 @@ const createInvitePom = ({
     await page.getByTestId("sidebar-invitations").click();
     await page.waitForURL(/invitations/);
     if (role) {
+      await page.getByRole("combobox").click();
       await page
-        .getByRole("button", { name: new RegExp(`^${role}$`, "i") })
+        .getByRole("option", { name: new RegExp(`^${role}$`, "i") })
         .click();
     }
     await page
@@ -241,17 +246,13 @@ const createInvitePom = ({
   }: {
     expectedEmails: string[];
   }) => {
-    // Invitations are accepted on the main app page, not the invitations page
-    // After login, we're already on /app/ which shows pending invitations
     for (const email of expectedEmails) {
-      const invitationRow = page
-        .locator("[data-slot='item']")
-        .filter({ hasText: email })
-        .first();
-      await page
-        .getByRole("button", { name: new RegExp(`accept.*${email}`, "i") })
-        .click();
-      await expect(invitationRow).not.toBeVisible();
+      const acceptButton = page.getByRole("button", {
+        name: new RegExp(`accept.*${email}`, "i"),
+      });
+      await expect(acceptButton).toBeVisible();
+      await acceptButton.click();
+      await expect(acceptButton).not.toBeVisible();
     }
   };
 
@@ -261,14 +262,12 @@ const createInvitePom = ({
     expectedEmails: string[];
   }) => {
     for (const email of expectedEmails) {
-      const invitationRow = page
-        .locator("[data-slot='item']")
-        .filter({ hasText: email })
-        .first();
-      await page
-        .getByRole("button", { name: new RegExp(`reject.*${email}`, "i") })
-        .click();
-      await expect(invitationRow).not.toBeVisible();
+      const rejectButton = page.getByRole("button", {
+        name: new RegExp(`reject.*${email}`, "i"),
+      });
+      await expect(rejectButton).toBeVisible();
+      await rejectButton.click();
+      await expect(rejectButton).not.toBeVisible();
     }
   };
 
@@ -280,12 +279,16 @@ const createInvitePom = ({
     targetName: string;
   }) => {
     await page.getByRole("button", { name: currentName }).click();
-    await page.getByRole("menuitem", { name: targetName }).click();
-    await page.waitForURL(/\/app\//);
+    await page
+      .getByRole("menuitem", { name: new RegExp(`^${targetName}$`, "i") })
+      .click();
+    await expect(page.getByRole("button", { name: targetName })).toBeVisible();
   };
 
   const expectInviteFormVisible = async () => {
-    await page.getByRole("heading", { name: "Invite New Members" }).waitFor();
+    await page.getByTestId("sidebar-invitations").click();
+    await page.waitForURL(/invitations/);
+    await page.getByText("Invite New Members", { exact: true }).waitFor();
   };
 
   return {
