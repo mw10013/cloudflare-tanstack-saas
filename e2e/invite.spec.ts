@@ -3,46 +3,46 @@ import { invariant } from "@epic-web/invariant";
 import { expect, test } from "@playwright/test";
 import { uniquifyEmail } from "./utils";
 
-const users: {
-  email: string;
-  invitees: { email: string; action?: "accept" | "reject" }[];
-}[] = [
-  {
-    email: uniquifyEmail("invite@e2e.com"),
-    invitees: [
-      { email: uniquifyEmail("invite1@e2e.com"), action: "accept" },
-      { email: uniquifyEmail("invite2@e2e.com"), action: "accept" },
-      { email: uniquifyEmail("invite3@e2e.com"), action: "accept" },
-    ],
-  },
-  {
-    email: uniquifyEmail("invite1@e2e.com"),
-    invitees: [
-      { email: uniquifyEmail("invite@e2e.com") },
-      { email: uniquifyEmail("invite2@e2e.com") },
-      { email: uniquifyEmail("invite3@e2e.com") },
-    ],
-  },
-  {
-    email: uniquifyEmail("invite2@e2e.com"),
-    invitees: [
-      { email: uniquifyEmail("invite@e2e.com"), action: "reject" },
-      { email: uniquifyEmail("invite1@e2e.com"), action: "reject" },
-      { email: uniquifyEmail("invite3@e2e.com"), action: "reject" },
-    ],
-  },
-  {
-    email: uniquifyEmail("invite3@e2e.com"),
-    invitees: [
-      { email: uniquifyEmail("invite@e2e.com"), action: "accept" },
-      { email: uniquifyEmail("invite1@e2e.com"), action: "reject" },
-      { email: uniquifyEmail("invite2@e2e.com") },
-    ],
-  },
-];
-
 test.describe("invite", () => {
   test.describe.configure({ mode: "serial" });
+
+  const users: {
+    email: string;
+    invitees: { email: string; action?: "accept" | "reject" }[];
+  }[] = [
+    {
+      email: uniquifyEmail("invite@e2e.com"),
+      invitees: [
+        { email: uniquifyEmail("invite1@e2e.com"), action: "accept" },
+        { email: uniquifyEmail("invite2@e2e.com"), action: "accept" },
+        { email: uniquifyEmail("invite3@e2e.com"), action: "accept" },
+      ],
+    },
+    {
+      email: uniquifyEmail("invite1@e2e.com"),
+      invitees: [
+        { email: uniquifyEmail("invite@e2e.com") },
+        { email: uniquifyEmail("invite2@e2e.com") },
+        { email: uniquifyEmail("invite3@e2e.com") },
+      ],
+    },
+    {
+      email: uniquifyEmail("invite2@e2e.com"),
+      invitees: [
+        { email: uniquifyEmail("invite@e2e.com"), action: "reject" },
+        { email: uniquifyEmail("invite1@e2e.com"), action: "reject" },
+        { email: uniquifyEmail("invite3@e2e.com"), action: "reject" },
+      ],
+    },
+    {
+      email: uniquifyEmail("invite3@e2e.com"),
+      invitees: [
+        { email: uniquifyEmail("invite@e2e.com"), action: "accept" },
+        { email: uniquifyEmail("invite1@e2e.com"), action: "reject" },
+        { email: uniquifyEmail("invite2@e2e.com") },
+      ],
+    },
+  ];
 
   test.beforeAll(async ({ request }) => {
     for (const email of users.map((user) => user.email)) {
@@ -110,6 +110,70 @@ test.describe("invite", () => {
   });
 });
 
+test.describe("admin invite", () => {
+  test.describe.configure({ mode: "serial" });
+
+  const adminInviteScenario = {
+    ownerEmail: uniquifyEmail("invite-admin-owner@e2e.com"),
+    adminEmail: uniquifyEmail("invite-admin-admin@e2e.com"),
+    memberEmail: uniquifyEmail("invite-admin-member@e2e.com"),
+  };
+
+  const getOrganizationName = (email: string) =>
+    `${email.charAt(0).toUpperCase() + email.slice(1)}'s Organization`;
+
+  test.beforeAll(async ({ request }) => {
+    for (const email of Object.values(adminInviteScenario)) {
+      await request.post(`/api/e2e/delete/user/${email}`);
+    }
+  });
+
+  test("admin can invite members", async ({ page, baseURL }) => {
+    invariant(baseURL, "Missing baseURL");
+    const pom = createInvitePom({ page, baseURL });
+    const ownerOrganizationName = getOrganizationName(
+      adminInviteScenario.ownerEmail,
+    );
+    const adminOrganizationName = getOrganizationName(
+      adminInviteScenario.adminEmail,
+    );
+
+    await pom.login({ email: adminInviteScenario.ownerEmail });
+    await pom.inviteUsers({
+      emails: [adminInviteScenario.adminEmail],
+      role: "admin",
+    });
+    await pom.verifyInvitations({
+      expectedEmails: [adminInviteScenario.adminEmail],
+      expectedRole: "admin",
+    });
+
+    await pom.login({ email: adminInviteScenario.adminEmail });
+    await pom.acceptInvitations({
+      expectedEmails: [adminInviteScenario.ownerEmail],
+    });
+    await pom.switchOrganization({
+      currentName: adminOrganizationName,
+      targetName: ownerOrganizationName,
+    });
+    await pom.expectInviteFormVisible();
+    await pom.inviteUsers({
+      emails: [adminInviteScenario.memberEmail],
+      role: "member",
+    });
+    await pom.verifyInvitations({
+      expectedEmails: [adminInviteScenario.memberEmail],
+      expectedRole: "member",
+    });
+
+    await pom.login({ email: adminInviteScenario.memberEmail });
+    await pom.acceptInvitations({
+      expectedEmails: [adminInviteScenario.ownerEmail],
+    });
+    await expect(page.getByTestId("member-count")).toHaveText("3");
+  });
+});
+
 const createInvitePom = ({
   page,
   baseURL,
@@ -128,9 +192,20 @@ const createInvitePom = ({
     await page.waitForURL(/\/app\//);
   };
 
-  const inviteUsers = async ({ emails }: { emails: string[] }) => {
+  const inviteUsers = async ({
+    emails,
+    role,
+  }: {
+    emails: string[];
+    role?: "member" | "admin";
+  }) => {
     await page.getByTestId("sidebar-invitations").click();
     await page.waitForURL(/invitations/);
+    if (role) {
+      await page
+        .getByRole("button", { name: new RegExp(`^${role}$`, "i") })
+        .click();
+    }
     await page
       .getByRole("textbox", { name: "Email Addresses" })
       .fill(emails.join(", "));
@@ -142,14 +217,22 @@ const createInvitePom = ({
 
   const verifyInvitations = async ({
     expectedEmails,
+    expectedRole,
   }: {
     expectedEmails: string[];
+    expectedRole?: "member" | "admin";
   }) => {
-    await expect(page.getByTestId("invitations-list")).toBeVisible();
+    const invitationsList = page.getByTestId("invitations-list");
+    await expect(invitationsList).toBeVisible();
     for (const email of expectedEmails) {
-      await expect(
-        page.getByTestId("invitations-list").getByText(email),
-      ).toBeVisible();
+      const invitationRow = invitationsList
+        .locator("[data-slot='item']")
+        .filter({ hasText: email })
+        .first();
+      await expect(invitationRow).toBeVisible();
+      if (expectedRole) {
+        await expect(invitationRow).toContainText(expectedRole);
+      }
     }
   };
 
@@ -161,12 +244,14 @@ const createInvitePom = ({
     // Invitations are accepted on the main app page, not the invitations page
     // After login, we're already on /app/ which shows pending invitations
     for (const email of expectedEmails) {
+      const invitationRow = page
+        .locator("[data-slot='item']")
+        .filter({ hasText: email })
+        .first();
       await page
         .getByRole("button", { name: new RegExp(`accept.*${email}`, "i") })
         .click();
-    }
-    for (const email of expectedEmails) {
-      await expect(page.getByText(`Inviter: ${email}`)).not.toBeVisible();
+      await expect(invitationRow).not.toBeVisible();
     }
   };
 
@@ -176,13 +261,31 @@ const createInvitePom = ({
     expectedEmails: string[];
   }) => {
     for (const email of expectedEmails) {
+      const invitationRow = page
+        .locator("[data-slot='item']")
+        .filter({ hasText: email })
+        .first();
       await page
         .getByRole("button", { name: new RegExp(`reject.*${email}`, "i") })
         .click();
+      await expect(invitationRow).not.toBeVisible();
     }
-    for (const email of expectedEmails) {
-      await expect(page.getByText(`Inviter: ${email}`)).not.toBeVisible();
-    }
+  };
+
+  const switchOrganization = async ({
+    currentName,
+    targetName,
+  }: {
+    currentName: string;
+    targetName: string;
+  }) => {
+    await page.getByRole("button", { name: currentName }).click();
+    await page.getByRole("menuitem", { name: targetName }).click();
+    await page.waitForURL(/\/app\//);
+  };
+
+  const expectInviteFormVisible = async () => {
+    await page.getByRole("heading", { name: "Invite New Members" }).waitFor();
   };
 
   return {
@@ -191,5 +294,7 @@ const createInvitePom = ({
     verifyInvitations,
     acceptInvitations,
     rejectInvitations,
+    switchOrganization,
+    expectInviteFormVisible,
   };
 };
