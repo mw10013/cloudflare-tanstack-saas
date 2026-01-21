@@ -13,8 +13,7 @@
 
 - Copy `.env.example` to `.env`.
 - Edit the `BETTER_AUTH_SECRET` and `STRIPE_SECRET_KEY` keys.
-- Set `STRIPE_WEBHOOK_SECRET` later after you run `pnpm stripe:listent` below.
-- Leave the aws ses email keys empty since we are running in demo mode.
+- Set `STRIPE_WEBHOOK_SECRET` later after you run `pnpm stripe:listen` below.
 
 ```
 pnpm i
@@ -25,7 +24,7 @@ pnpm stripe:listen
 pnpm dev
 
 # cron
-curl "http://localhost:5173/cdn-cgi/handler/scheduled?cron=0%200%20*%20*%20*"
+curl "http://localhost:3000/cdn-cgi/handler/scheduled?cron=0%200%20*%20*%20*"
 ```
 
 ## Testing

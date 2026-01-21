@@ -31,7 +31,6 @@
     "d1:reset": "node scripts/d1-reset.ts",
     "d1:reset:PRODUCTION": "node scripts/d1-reset.ts --env production",
     "stripe:listen": "source .env && stripe listen --project-name=tcs-int --events checkout.session.completed,customer.subscription.created,customer.subscription.updated,customer.subscription.deleted --forward-to http://localhost:${PORT}/api/auth/stripe/webhook",
-    "stripe:listen:crrs": "source .env && stripe listen --project-name=crrs-int --events checkout.session.completed,customer.subscription.created,customer.subscription.updated,customer.subscription.deleted --forward-to http://localhost:${PORT}/api/auth/stripe/webhook",
     "refs:shadcn": "rm -rf refs/shadcn && mkdir -p refs/shadcn && curl -L https://github.com/shadcn-ui/ui/archive/refs/tags/shadcn@3.6.2.tar.gz | tar -xz -C refs/shadcn --strip-components=1",
     "refs:tan-form": "rm -rf refs/tan-form && mkdir -p refs/tan-form && curl -L https://github.com/TanStack/form/archive/refs/tags/@tanstack/react-form@1.27.7.tar.gz | tar -xz -C refs/tan-form --strip-components=1",
     "refs:base-ui": "rm -rf refs/base-ui && mkdir -p refs/base-ui && curl -L https://github.com/mui/base-ui/archive/refs/tags/v1.0.0.tar.gz | tar -xz -C refs/base-ui --strip-components=1",
