@@ -33,7 +33,7 @@
   ],
   "env": {
     "production": {
-      "name": "tcs",
+      "name": "ctss",
       "vars": {
         "ENVIRONMENT": "production",
         "DEMO_MODE": "true",
