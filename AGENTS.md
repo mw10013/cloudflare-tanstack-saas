@@ -43,6 +43,8 @@ Do not run `pnpm test:integration` since its tests are broken.
 - Use optional chaining (?.) and nullish coalescing (??) operators
 - **Do not add any comments to generated code.** Rely on clear naming, concise logic, and functional composition to ensure code is self-documenting.
 - Employ a concise and dense coding style. Prefer inlining expressions, function composition (e.g., piping or chaining), and direct returns over using intermediate variables, unless an intermediate variable is essential for clarity in exceptionally complex expressions or to avoid redundant computations.
+- Inline types when practical instead of introducing extra interfaces or type aliases.
+- Avoid intermediate variables that are not necessary for clarity.
 - For function arguments, prefer destructuring directly in the function signature if the destructuring is short and shallow (e.g., `({ data: { value }, otherArg })`). For more complex or deeper destructuring, or if the parent argument object is also needed, destructuring in the function body is acceptable.
 - Prefer namespace imports for large libraries.
 - **Strict mode enabled**: All strict TypeScript checks are on
