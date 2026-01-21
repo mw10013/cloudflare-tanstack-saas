@@ -7,7 +7,7 @@ import {
 } from "@tanstack/react-router";
 import { createServerFn, useServerFn } from "@tanstack/react-start";
 import { ChevronsUpDown, LogOut } from "lucide-react";
-import { AppLogoIcon } from "@/components/app-logo-icon";
+import { AppLogo } from "@/components/app-logo";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -79,7 +79,7 @@ function AppSidebar({ user }: { user: { email: string } }) {
           aria-label="Home"
           render={<Link to="/" />}
         >
-          <AppLogoIcon className="text-primary size-7" />
+          <AppLogo />
         </Button>
       </SidebarHeader>
       <SidebarContent>

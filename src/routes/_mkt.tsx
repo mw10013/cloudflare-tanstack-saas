@@ -1,7 +1,7 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { createServerFn, useServerFn } from "@tanstack/react-start";
 import { siGithub } from "simple-icons";
-import { AppLogoIcon } from "@/components/app-logo-icon";
+import { AppLogo } from "@/components/app-logo";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -45,8 +45,7 @@ function Header() {
       <div className="flex h-16 items-center justify-between gap-2">
         <div className="flex items-center gap-12">
           <a href="/" className="flex items-center gap-1">
-            <AppLogoIcon className="size-6 fill-current" />
-            <span className="text-xl font-extrabold">TCS</span>
+            <AppLogo />
             <span className="bg-primary relative top-1 size-1.5" />
           </a>
           <div className="hidden items-center gap-6 md:flex">
@@ -114,8 +113,7 @@ export function Footer() {
       <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6">
         <div className="max-w-md space-y-4 md:col-span-2 lg:col-span-4">
           <a href="/" className="flex items-center gap-1">
-            <AppLogoIcon className="size-6 fill-current" />
-            <span className="text-xl font-extrabold">TCS</span>
+            <AppLogo />
             <span className="bg-primary relative top-1 size-1.5" />
           </a>
           <p className="text-muted-foreground text-sm">
