@@ -33,7 +33,7 @@
     "stripe:listen": "source .env && stripe listen --project-name=tcs-int --events checkout.session.completed,customer.subscription.created,customer.subscription.updated,customer.subscription.deleted --forward-to http://localhost:${PORT}/api/auth/stripe/webhook",
     "refs:shadcn": "rm -rf refs/shadcn && mkdir -p refs/shadcn && curl -L https://github.com/shadcn-ui/ui/archive/refs/tags/shadcn@3.7.0.tar.gz | tar -xz -C refs/shadcn --strip-components=1",
     "refs:tan-form": "rm -rf refs/tan-form && mkdir -p refs/tan-form && curl -L https://github.com/TanStack/form/archive/refs/tags/@tanstack/react-form@1.27.7.tar.gz | tar -xz -C refs/tan-form --strip-components=1",
-    "refs:base-ui": "rm -rf refs/base-ui && mkdir -p refs/base-ui && curl -L https://github.com/mui/base-ui/archive/refs/tags/v1.0.0.tar.gz | tar -xz -C refs/base-ui --strip-components=1",
+    "refs:base-ui": "rm -rf refs/base-ui && mkdir -p refs/base-ui && curl -L https://github.com/mui/base-ui/archive/refs/tags/v1.1.0.tar.gz | tar -xz -C refs/base-ui --strip-components=1",
     "refs:tan-router": "rm -rf refs/tan-router && mkdir -p refs/tan-router && curl -L https://github.com/TanStack/router/archive/refs/tags/v1.144.0.tar.gz | tar -xz -C refs/tan-router --strip-components=1",
     "refs:tan-query": "rm -rf refs/tan-query && mkdir -p refs/tan-query && curl -sL https://github.com/TanStack/query/archive/refs/tags/@tanstack/react-query@5.90.16.tar.gz | tar -xzC refs/tan-query --strip-components=1",
     "refs:tan-start": "rm -rf refs/tan-start && mkdir -p refs/tan-start && curl -L https://github.com/TanStack/router/archive/refs/tags/v1.145.3.tar.gz | tar -xz -C refs/tan-start --strip-components=1",
@@ -46,7 +46,7 @@
     "clone:links": "[ ! -e refs ] && ln -s ../tanstack-cloudflare-saas/refs refs; [ ! -e todo.md ] && ln -s ../tanstack-cloudflare-saas/todo.md todo.md"
   },
   "dependencies": {
-    "@base-ui/react": "1.0.0",
+    "@base-ui/react": "1.1.0",
     "@better-auth/core": "1.4.12",
     "@better-auth/stripe": "1.4.12",
     "@cloudflare/vite-plugin": "1.20.3",
