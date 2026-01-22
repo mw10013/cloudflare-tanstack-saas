@@ -71,6 +71,9 @@ const getLoaderData = createServerFn({ method: "GET" })
     };
   });
 
+/**
+ * Authorization is enforced by better-auth removeMember.
+ */
 const removeMember = createServerFn({ method: "POST" })
   .inputValidator(
     z.object({
@@ -91,6 +94,9 @@ const removeMember = createServerFn({ method: "POST" })
     },
   );
 
+/**
+ * Authorization is enforced by better-auth leaveOrganization.
+ */
 const leaveOrganization = createServerFn({ method: "POST" })
   .inputValidator(z.object({ organizationId: z.string() }))
   .handler(async ({ data: { organizationId }, context: { authService } }) => {
@@ -101,6 +107,9 @@ const leaveOrganization = createServerFn({ method: "POST" })
     });
   });
 
+/**
+ * Authorization is enforced by better-auth updateMemberRole.
+ */
 const updateMemberRole = createServerFn({ method: "POST" })
   .inputValidator(
     z.object({

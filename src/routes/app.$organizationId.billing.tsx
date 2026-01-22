@@ -238,6 +238,9 @@ function NoSubscriptionCard() {
   );
 }
 
+/**
+ * Authorization is enforced by better-auth createBillingPortal.
+ */
 const manageBilling = createServerFn({ method: "POST" })
   .inputValidator(z.object({ organizationId: z.string() }))
   .handler(async ({ data: { organizationId }, context: { authService } }) => {
@@ -253,6 +256,9 @@ const manageBilling = createServerFn({ method: "POST" })
     return result;
   });
 
+/**
+ * Authorization is enforced by better-auth cancelSubscription.
+ */
 const cancelSubscription = createServerFn({ method: "POST" })
   .inputValidator(
     z.object({ organizationId: z.string(), subscriptionId: z.string() }),
@@ -277,6 +283,9 @@ const cancelSubscription = createServerFn({ method: "POST" })
     },
   );
 
+/**
+ * Authorization is enforced by better-auth restoreSubscription.
+ */
 const restoreSubscription = createServerFn({ method: "POST" })
   .inputValidator(
     z.object({ organizationId: z.string(), subscriptionId: z.string() }),
