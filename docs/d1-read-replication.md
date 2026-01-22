@@ -27,17 +27,28 @@ Key files:
 
 TanStack Start centers server-only logic in server functions and uses request context for dependency injection.
 
-- **Request context**: Add a per-request D1 session in the server entry point and pass it to `handler.fetch` as `context`. This aligns with TanStack Start’s request context pattern, which makes it available to server functions, server routes, and loaders via the router context.
-- **Server functions for DB access**: Loaders are isomorphic, so any D1 access should be wrapped in `createServerFn()` and called from loaders or components. This keeps DB logic server-only while preserving type-safe call sites.
-- **Route guards**: Use `beforeLoad` for auth and route guards; keep the primary-session constraint for auth routes and allow replica reads elsewhere.
+- **Request context**: Extend the existing request context in `src/worker.ts` to include a per-request D1 session instead of `env.D1`. The server already calls `serverEntry.fetch` with a typed context, so this is the natural insertion point.
+- **Server functions for DB access**: Loaders are isomorphic, and this repo already uses `createServerFn` heavily; keep all D1 access in server functions and read the session from `context`.
+- **Route guards**: Existing auth checks use `beforeLoad` server functions; keep primary-session constraints for auth routes and allow replica reads elsewhere.
 
 TanStack patterns to follow:
 
-- Use `createServerEntry` for custom server logic and request context.
-- Use `createServerFn` for D1 access so loaders stay isomorphic.
-- Use `beforeLoad` for auth gating and request context extension.
+- Use the existing `serverEntry.fetch` context injection in `src/worker.ts`.
+- Keep D1 access in `createServerFn` handlers, not in loaders.
+- Keep auth gating in `beforeLoad` server functions.
+
+## Current Codebase Notes
+
+- `src/worker.ts` wires request context and calls `serverEntry.fetch` with `repository` and `authService` created from `env.D1`.
+- Most data access already flows through server functions and `context` (`authService`, `repository`, `session`).
+- There is no centralized response wrapper today; if we need `Set-Cookie` for the D1 bookmark, it must be set in the worker fetch handler or by using server function response helpers.
 
 ## Trade-offs
+
+### Cookie transport choice
+
+- The client does not manually set headers for server functions or route loaders, so a cookie is the most reliable way to persist the D1 bookmark across requests.
+- This matches the existing `crrbuis` pattern and aligns with how the worker can always append `Set-Cookie` on responses.
 
 ### Pros
 
@@ -53,11 +64,11 @@ TanStack patterns to follow:
 
 ## Recommendation
 
-Adopt the `crrbuis` bookmark session pattern, but implement it using TanStack Start request context and server function boundaries:
+Adopt the `crrbuis` bookmark session pattern, but implement it using the existing worker request context and server function boundaries:
 
-1. **Server entry point**: Create a request-scoped D1 session from the bookmark cookie and pass it through request context.
-2. **Server functions**: Centralize D1 access in server functions that use the session from context.
-3. **Route guards**: Use `beforeLoad` for auth routes and set session constraints to `"first-primary"` when needed.
-4. **Response headers**: Persist the bookmark with `Set-Cookie` on every response that touched D1.
+1. **Worker entry point**: In `src/worker.ts`, build a D1 session from the bookmark cookie and pass the session-backed repository/auth service into `serverEntry.fetch`.
+2. **Server functions**: Centralize D1 access in server functions that use the session from `context`.
+3. **Route guards**: Use `"first-primary"` only for requests that must read immediately consistent auth/session state. In `crrbuis`, this is limited to `/api/auth/*` requests, while everything else uses the bookmark session.
+4. **Response headers**: Persist the bookmark with `Set-Cookie` in the worker response so it applies to all route/server function responses.
 
-This keeps the read-replica benefits while matching TanStack Start’s execution model and avoiding server-only logic in loaders.
+This keeps the read-replica benefits while matching the current request context wiring and avoiding server-only logic in loaders.
