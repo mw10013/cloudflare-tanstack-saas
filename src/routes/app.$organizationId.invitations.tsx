@@ -134,6 +134,9 @@ const inviteSchema = z.object({
   ),
 });
 
+/**
+ * Authorization is enforced by better-auth createInvitation.
+ */
 const invite = createServerFn({ method: "POST" })
   .inputValidator(inviteSchema)
   .handler(
@@ -297,6 +300,9 @@ function InviteForm({ organizationId }: { organizationId: string }) {
   );
 }
 
+/**
+ * Authorization is enforced by better-auth cancelInvitation.
+ */
 const cancelInvitation = createServerFn({ method: "POST" })
   .inputValidator(z.object({ invitationId: z.string() }))
   .handler(async ({ data: { invitationId }, context: { authService } }) => {
