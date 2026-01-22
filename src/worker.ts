@@ -3,6 +3,7 @@ import type { Repository } from "@/lib/repository";
 import type { StripeService } from "@/lib/stripe-service";
 import serverEntry from "@tanstack/react-start/server-entry";
 import { createAuthService } from "@/lib/auth-service";
+import { createD1SessionService } from "@/lib/d1-session-service";
 import { createRepository } from "@/lib/repository";
 import { createStripeService } from "@/lib/stripe-service";
 
@@ -36,10 +37,17 @@ export default {
         return new Response("Rate limit exceeded", { status: 429 });
       }
     }
-    const repository = createRepository({ db: env.D1 });
+    const d1SessionService = createD1SessionService({
+      d1: env.D1,
+      request,
+      sessionConstraint: url.pathname.startsWith("/api/auth/")
+        ? "first-primary"
+        : undefined,
+    });
+    const repository = createRepository({ db: d1SessionService.getSession() });
     const stripeService = createStripeService();
     const authService = createAuthService({
-      db: env.D1,
+      db: d1SessionService.getSession(),
       stripeService,
       kv: env.KV,
       baseURL: env.BETTER_AUTH_URL,
@@ -52,7 +60,7 @@ export default {
     const session = await authService.api.getSession({
       headers: request.headers,
     });
-    return serverEntry.fetch(request, {
+    const response = await serverEntry.fetch(request, {
       context: {
         env,
         repository,
@@ -61,6 +69,8 @@ export default {
         session: session ?? undefined,
       },
     });
+    d1SessionService.setSessionBookmarkCookie(response);
+    return response;
   },
 
   async scheduled(scheduledEvent, env, _ctx) {
