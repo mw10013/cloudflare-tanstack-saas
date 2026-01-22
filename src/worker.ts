@@ -25,6 +25,17 @@ declare module "@tanstack/react-start" {
 export default {
   async fetch(request, env, _ctx) {
     console.log(`fetch: ${request.url}`);
+    const url = new URL(request.url);
+    const isMagicLinkRequest =
+      (url.pathname === "/login" && request.method === "POST") ||
+      url.pathname === "/api/auth/magic-link/verify";
+    if (isMagicLinkRequest) {
+      const ip = request.headers.get("cf-connecting-ip") ?? "unknown";
+      const { success } = await env.MAGIC_LINK_RATE_LIMITER.limit({ key: ip });
+      if (!success) {
+        return new Response("Rate limit exceeded", { status: 429 });
+      }
+    }
     const repository = createRepository({ db: env.D1 });
     const stripeService = createStripeService();
     const authService = createAuthService({
