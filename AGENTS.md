@@ -30,12 +30,13 @@ pnpm typecheck          # TypeScript type checking (includes wrangler types gene
 pnpm lint               # Run ESLint
 pnpm test               # Run all tests with Vitest. We only have d1-adapter tests so not that useful yet.
 pnpm run test:e2e --    # Run Playwright; pass args after --
+npm run test:e2e --     # Playwright via npm (uses pnpm exec in script)
 ```
 
 Do not run `pnpm test:integration` since its tests are broken.
 
 - Run typecheck and lint after generating code.
-- Playwright needs args after `--`, e.g. `pnpm run test:e2e -- e2e/invite.spec.ts -g "admin invite" --trace on`.
+- Playwright needs args after `--`, e.g. `pnpm run test:e2e -- e2e/invite.spec.ts -g "admin invite" --trace on` or `npm run test:e2e -- e2e/invite.spec.ts -g "admin invite" --trace on`.
 
 ## TypeScript Guidelines
 
