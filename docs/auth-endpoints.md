@@ -35,8 +35,21 @@ These Stripe subscription endpoints are Better Auth HTTP routes, but we should n
 
 Only the Stripe callbacks and webhook should be exposed publicly. The subscription actions should remain behind server functions by removing the blanket `/api/auth/*` passthrough and whitelisting just the required public endpoints.
 
+## Allowlist approach (TanStack Start idioms)
+
+The most idiomatic TanStack Start approach is to keep `/api/auth/$` and add server-route middleware that blocks requests whose path/method are not in an allowlist. Middleware runs for all handlers in the route, so you only need to define the allowlist once and let GET/POST share it.
+
+Implementation sketch:
+
+- Add `server.middleware` on `/api/auth/$`.
+- In the middleware, read `request.method` and `new URL(request.url).pathname`.
+- Allow only the small set of public endpoints.
+- Return `new Response("Not Found", { status: 404 })` for any other path.
+
+This avoids duplicating allowlists across GET/POST handlers and keeps the route file small. Handler-specific allowlists are possible, but they tend to drift because you would need to maintain separate lists in both `GET` and `POST` handlers.
+
 ## Recommendation
 
-- Replace the wildcard `/api/auth/*` handler with explicit routes, similar to `refs/crrbuis/workers/app.ts`.
-- Continue exposing `stripe/webhook`, `magic-link/verify`, and Stripe callback URLs.
-- Consider proxying subscription actions through server functions and not exposing those routes directly.
+- Keep `/api/auth/$` but add a single middleware allowlist.
+- Allow only `stripe/webhook`, `magic-link/verify`, and Stripe callback URLs.
+- Keep subscription actions behind server functions, not the public allowlist.
