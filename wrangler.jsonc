@@ -31,6 +31,9 @@
       "id": "kv-local"
     }
   ],
+  "triggers": {
+    "crons": ["0 0 * * *"]
+  },
   "env": {
     "production": {
       "name": "tcs",
@@ -52,7 +55,10 @@
           "binding": "KV",
           "id": "8c068c6fcca946b59f364990b3687aaa"
         }
-      ]
+      ],
+      "triggers": {
+        "crons": ["0 0 * * *"]
+      }
     }
   }
 }
