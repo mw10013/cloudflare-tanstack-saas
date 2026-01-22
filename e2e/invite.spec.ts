@@ -1,7 +1,7 @@
 import type { Page } from "@playwright/test";
 import { invariant } from "@epic-web/invariant";
 import { expect, test } from "@playwright/test";
-import { uniquifyEmail } from "./utils";
+import { scopeEmail } from "./utils";
 
 test.describe("invite", () => {
   test.describe.configure({ mode: "serial" });
@@ -11,35 +11,35 @@ test.describe("invite", () => {
     invitees: { email: string; action?: "accept" | "reject" }[];
   }[] = [
     {
-      email: uniquifyEmail("invite@e2e.com"),
+      email: scopeEmail("invite@e2e.com"),
       invitees: [
-        { email: uniquifyEmail("invite1@e2e.com"), action: "accept" },
-        { email: uniquifyEmail("invite2@e2e.com"), action: "accept" },
-        { email: uniquifyEmail("invite3@e2e.com"), action: "accept" },
+        { email: scopeEmail("invite1@e2e.com"), action: "accept" },
+        { email: scopeEmail("invite2@e2e.com"), action: "accept" },
+        { email: scopeEmail("invite3@e2e.com"), action: "accept" },
       ],
     },
     {
-      email: uniquifyEmail("invite1@e2e.com"),
+      email: scopeEmail("invite1@e2e.com"),
       invitees: [
-        { email: uniquifyEmail("invite@e2e.com") },
-        { email: uniquifyEmail("invite2@e2e.com") },
-        { email: uniquifyEmail("invite3@e2e.com") },
+        { email: scopeEmail("invite@e2e.com") },
+        { email: scopeEmail("invite2@e2e.com") },
+        { email: scopeEmail("invite3@e2e.com") },
       ],
     },
     {
-      email: uniquifyEmail("invite2@e2e.com"),
+      email: scopeEmail("invite2@e2e.com"),
       invitees: [
-        { email: uniquifyEmail("invite@e2e.com"), action: "reject" },
-        { email: uniquifyEmail("invite1@e2e.com"), action: "reject" },
-        { email: uniquifyEmail("invite3@e2e.com"), action: "reject" },
+        { email: scopeEmail("invite@e2e.com"), action: "reject" },
+        { email: scopeEmail("invite1@e2e.com"), action: "reject" },
+        { email: scopeEmail("invite3@e2e.com"), action: "reject" },
       ],
     },
     {
-      email: uniquifyEmail("invite3@e2e.com"),
+      email: scopeEmail("invite3@e2e.com"),
       invitees: [
-        { email: uniquifyEmail("invite@e2e.com"), action: "accept" },
-        { email: uniquifyEmail("invite1@e2e.com"), action: "reject" },
-        { email: uniquifyEmail("invite2@e2e.com") },
+        { email: scopeEmail("invite@e2e.com"), action: "accept" },
+        { email: scopeEmail("invite1@e2e.com"), action: "reject" },
+        { email: scopeEmail("invite2@e2e.com") },
       ],
     },
   ];
@@ -114,9 +114,9 @@ test.describe("admin invite", () => {
   test.describe.configure({ mode: "serial" });
 
   const adminInviteScenario = {
-    ownerEmail: uniquifyEmail("invite-admin-owner@e2e.com"),
-    adminEmail: uniquifyEmail("invite-admin-admin@e2e.com"),
-    memberEmail: uniquifyEmail("invite-admin-member@e2e.com"),
+    ownerEmail: scopeEmail("invite-admin-owner@e2e.com"),
+    adminEmail: scopeEmail("invite-admin-admin@e2e.com"),
+    memberEmail: scopeEmail("invite-admin-member@e2e.com"),
   };
 
   const getOrganizationName = (email: string) =>

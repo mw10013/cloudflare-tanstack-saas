@@ -2,7 +2,7 @@ import type { APIRequestContext, Page } from "@playwright/test";
 import { invariant } from "@epic-web/invariant";
 import { expect, test } from "@playwright/test";
 import { planData } from "@/lib/domain";
-import { uniquifyEmail } from "./utils";
+import { scopeEmail } from "./utils";
 
 const emailPrefix = "stripe-";
 
@@ -10,14 +10,14 @@ test.describe("subscribe", () => {
   planData
     .flatMap((plan) => [
       {
-        email: uniquifyEmail(
+        email: scopeEmail(
           `${emailPrefix}${plan.monthlyPriceLookupKey.toLowerCase()}@e2e.com`,
         ),
         intent: plan.monthlyPriceLookupKey,
         planName: plan.name,
       },
       {
-        email: uniquifyEmail(
+        email: scopeEmail(
           `${emailPrefix}${plan.annualPriceLookupKey.toLowerCase()}@e2e.com`,
         ),
         intent: plan.annualPriceLookupKey,
@@ -42,14 +42,14 @@ test.describe("subscribe/cancel", () => {
   planData
     .flatMap((plan) => [
       {
-        email: uniquifyEmail(
+        email: scopeEmail(
           `${emailPrefix}${plan.monthlyPriceLookupKey.toLowerCase()}-cancel@e2e.com`,
         ),
         intent: plan.monthlyPriceLookupKey,
         planName: plan.name,
       },
       {
-        email: uniquifyEmail(
+        email: scopeEmail(
           `${emailPrefix}${plan.annualPriceLookupKey.toLowerCase()}-cancel@e2e.com`,
         ),
         intent: plan.annualPriceLookupKey,
@@ -76,7 +76,7 @@ test.describe("subscribe/upgrade", () => {
   [planData, [...planData].reverse()]
     .flatMap(([plan, plan1]) => [
       {
-        email: uniquifyEmail(
+        email: scopeEmail(
           `${emailPrefix}${plan.monthlyPriceLookupKey.toLowerCase()}-${plan.monthlyPriceLookupKey.toLowerCase()}-upgrade@e2e.com`,
         ),
         intent: plan.monthlyPriceLookupKey,
@@ -85,7 +85,7 @@ test.describe("subscribe/upgrade", () => {
         planName1: plan.name,
       },
       {
-        email: uniquifyEmail(
+        email: scopeEmail(
           `${emailPrefix}${plan.monthlyPriceLookupKey.toLowerCase()}-${plan1.monthlyPriceLookupKey.toLowerCase()}-upgrade@e2e.com`,
         ),
         intent: plan.monthlyPriceLookupKey,
@@ -94,7 +94,7 @@ test.describe("subscribe/upgrade", () => {
         planName1: plan1.name,
       },
       {
-        email: uniquifyEmail(
+        email: scopeEmail(
           `${emailPrefix}${plan.monthlyPriceLookupKey.toLowerCase()}-${plan1.annualPriceLookupKey.toLowerCase()}-upgrade@e2e.com`,
         ),
         intent: plan.monthlyPriceLookupKey,
