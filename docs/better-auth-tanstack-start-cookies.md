@@ -70,6 +70,10 @@ export const signOutServerFn = createServerFn({ method: "POST" }).handler(
 );
 ```
 
-## When to add the plugin
+## Trade-offs
 
-If we start calling `auth.api.*` in server functions or loaders without explicitly forwarding the returned headers, we should add `tanstackStartCookies` to avoid missing cookie writes.
+Manual header forwarding keeps cookie handling explicit and avoids relying on TanStack Start's cookie API, but it is easy to miss a `returnHeaders` + passthrough when adding new `auth.api.*` calls. The plugin automates cookie writes in server functions and loaders but adds hidden behavior and depends on TanStack Start's cookie bridge.
+
+## Recommendation
+
+Keep the current approach while auth calls stay limited and headers are consistently forwarded. If more server-side `auth.api.*` usage is planned or the team wants safer defaults, add `tanstackStartCookies` to reduce the risk of missing cookie propagation.
