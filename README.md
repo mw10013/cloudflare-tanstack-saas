@@ -5,9 +5,6 @@
 - Install the [Stripe CLI](https://stripe.com/docs/stripe-cli).
 - Go to stripe and create a sandbox for testing named `tcs-int`
   - Remember secret key for `STRIPE_SECRET_KEY` environment variable.
-- Create a stripe webhook
-  - Endpoint URL: `https://dummy.com/api/auth/stripe/webhook` (This is dummy placeholder for local dev)
-  - Events: `checkout.session.completed`, `customer.subscription.deleted`, `customer.subscription.updated`
 
 ### Local Env
 
@@ -39,16 +36,6 @@ curl "http://localhost:3000/cdn-cgi/handler/scheduled?cron=0%200%20*%20*%20*"
 
 ```
 pnpm test
-pnpm vitest --config test/integration/vitest.config.ts run test/integration/auth.test.ts
-pnpm vitest --config test/integration/vitest.config.ts run --include test/integration/auth.test.ts
-pnpm vitest --config test/integration/vitest.config.ts run test/integration/auth.test.ts -t "sends magic link and writes it to KV"
-pnpm vitest --config test/integration/vitest.config.ts run test/integration/auth.test.ts -t "verifies magic link and creates a session"
-pnpm vitest --config test/integration/vitest.config.ts run test/integration/auth.test.ts -t "redirects /magic-link based on user role"
-pnpm vitest --config test/integration/vitest.config.ts run test/integration/auth.test.ts -t "signs out (endpoint reachable)"
-
-pnpm test:e2e e2e/stripe1.spec.ts --project=chromium --workers=1 --reporter=line
-pnpm test:e2e e2e/stripe1.spec.ts --project=chromium --workers=1 --repeat-each=3 --reporter=line
-pnpm -s test:e2e e2e/stripe1.spec.ts --project=chromium --workers=1
 ```
 
 ### E2E Tests
@@ -60,6 +47,10 @@ pnpm test:e2e
 ```
 
 ## Deploy
+
+- Create stripe webhook
+  - Endpoint URL: `https://[DOMAIN]/api/auth/stripe/webhook`
+  - Events: `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`
 
 - pnpm exec wrangler kv namespace create tcs-kv-production
 - Update wrangler.jsonc production kv_namespaces

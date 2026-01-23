@@ -51,19 +51,19 @@
         "ENVIRONMENT": "production",
         "DEMO_MODE": "true",
         "TRANSACTIONAL_EMAIL": "noreply@example.com",
-        "BETTER_AUTH_URL": "https://ctss.devxo.workers.dev"
+        "BETTER_AUTH_URL": "https://tcs.devxo.workers.dev"
       },
       "d1_databases": [
         {
           "binding": "D1",
           "database_name": "tcs-d1-production",
-          "database_id": "7891d5d6-12d3-4697-8d2e-742141de48fd"
+          "database_id": "40661edb-f902-498f-8ce4-d70c06535857"
         }
       ],
       "kv_namespaces": [
         {
           "binding": "KV",
-          "id": "8c068c6fcca946b59f364990b3687aaa"
+          "id": "7c255fc45cba4a389ea73fbca48f721d"
         }
       ],
       "ratelimits": [
