@@ -129,6 +129,36 @@ export function Footer() {
           <ul className="space-y-2 text-sm">
             <li>
               <a
+                href="https://tanstack.com/"
+                className="text-muted-foreground data-hovered:text-foreground transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                TanStack
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://developers.cloudflare.com/"
+                className="text-muted-foreground data-hovered:text-foreground transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Cloudflare
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://www.better-auth.com/"
+                className="text-muted-foreground data-hovered:text-foreground transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Better-Auth
+              </a>
+            </li>
+            <li>
+              <a
                 href="https://ui.shadcn.com"
                 className="text-muted-foreground data-hovered:text-foreground transition-colors"
                 target="_blank"
