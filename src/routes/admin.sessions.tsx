@@ -52,7 +52,7 @@ export const getSessions = createServerFn({ method: "GET" })
   });
 
 export const Route = createFileRoute("/admin/sessions")({
-  validateSearch: (search) => sessionSearchSchema.parse(search),
+  validateSearch: sessionSearchSchema,
   loaderDeps: ({ search }) => ({ page: search.page, filter: search.filter }),
   loader: async ({ deps }) => {
     const result = await getSessions({ data: deps });

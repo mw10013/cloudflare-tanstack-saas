@@ -28,13 +28,15 @@ import {
 } from "@/components/ui/select";
 import * as Domain from "@/lib/domain";
 
+const organizationIdSchema = z.object({ organizationId: z.string() });
+
 export const Route = createFileRoute("/app/$organizationId/members")({
   loader: ({ params: data }) => getLoaderData({ data }),
   component: RouteComponent,
 });
 
 const getLoaderData = createServerFn({ method: "GET" })
-  .inputValidator(z.object({ organizationId: z.string() }))
+  .inputValidator(organizationIdSchema)
   .handler(async ({ data: { organizationId }, context: { authService } }) => {
     const request = getRequest();
     const session = await authService.api.getSession({
@@ -98,7 +100,7 @@ const removeMember = createServerFn({ method: "POST" })
  * Authorization is enforced by better-auth leaveOrganization.
  */
 const leaveOrganization = createServerFn({ method: "POST" })
-  .inputValidator(z.object({ organizationId: z.string() }))
+  .inputValidator(organizationIdSchema)
   .handler(async ({ data: { organizationId }, context: { authService } }) => {
     const request = getRequest();
     await authService.api.leaveOrganization({

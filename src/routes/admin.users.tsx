@@ -63,13 +63,15 @@ import {
 
 const LIMIT = 5;
 
+const userSearchSchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  filter: z.string().trim().optional(),
+});
+
+const userIdSchema = z.object({ userId: z.string() });
+
 export const getUsers = createServerFn({ method: "GET" })
-  .inputValidator(
-    z.object({
-      page: z.coerce.number().int().min(1).default(1),
-      filter: z.string().trim().optional(),
-    }),
-  )
+  .inputValidator(userSearchSchema)
   .handler(async ({ data, context: { repository } }) => {
     const { page, filter } = data;
     const offset = (page - 1) * LIMIT;
@@ -88,13 +90,7 @@ export const getUsers = createServerFn({ method: "GET" })
   });
 
 export const Route = createFileRoute("/admin/users")({
-  validateSearch: (search) => {
-    const schema = z.object({
-      page: z.coerce.number().int().min(1).default(1),
-      filter: z.string().trim().optional(),
-    });
-    return schema.parse(search);
-  },
+  validateSearch: userSearchSchema,
   loaderDeps: ({ search }) => ({ page: search.page, filter: search.filter }),
   loader: async ({ deps }) => {
     const result = await getUsers({ data: deps });
@@ -111,7 +107,7 @@ export const Route = createFileRoute("/admin/users")({
 });
 
 export const unbanUser = createServerFn({ method: "POST" })
-  .inputValidator(z.object({ userId: z.string() }))
+  .inputValidator(userIdSchema)
   .handler(async ({ data, context: { authService } }) => {
     const request = getRequest();
     await authService.api.unbanUser({
@@ -122,7 +118,7 @@ export const unbanUser = createServerFn({ method: "POST" })
   });
 
 export const impersonateUser = createServerFn({ method: "POST" })
-  .inputValidator(z.object({ userId: z.string() }))
+  .inputValidator(userIdSchema)
   .handler(async ({ data, context: { authService } }) => {
     const request = getRequest();
     const { headers } = await authService.api.impersonateUser({

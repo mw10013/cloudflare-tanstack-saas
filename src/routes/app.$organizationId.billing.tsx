@@ -20,13 +20,20 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
+const organizationIdSchema = z.object({ organizationId: z.string() });
+
+const subscriptionActionSchema = z.object({
+  organizationId: z.string(),
+  subscriptionId: z.string(),
+});
+
 export const Route = createFileRoute("/app/$organizationId/billing")({
   loader: ({ params }) => getLoaderData({ data: params }),
   component: RouteComponent,
 });
 
 const getLoaderData = createServerFn({ method: "GET" })
-  .inputValidator(z.object({ organizationId: z.string() }))
+  .inputValidator(organizationIdSchema)
   .handler(async ({ data: { organizationId }, context: { authService } }) => {
     const request = getRequest();
     const subscriptions = await authService.api.listActiveSubscriptions({
@@ -242,7 +249,7 @@ function NoSubscriptionCard() {
  * Authorization is enforced by better-auth createBillingPortal.
  */
 const manageBilling = createServerFn({ method: "POST" })
-  .inputValidator(z.object({ organizationId: z.string() }))
+  .inputValidator(organizationIdSchema)
   .handler(async ({ data: { organizationId }, context: { authService } }) => {
     const request = getRequest();
     const result = await authService.api.createBillingPortal({
@@ -260,9 +267,7 @@ const manageBilling = createServerFn({ method: "POST" })
  * Authorization is enforced by better-auth cancelSubscription.
  */
 const cancelSubscription = createServerFn({ method: "POST" })
-  .inputValidator(
-    z.object({ organizationId: z.string(), subscriptionId: z.string() }),
-  )
+  .inputValidator(subscriptionActionSchema)
   .handler(
     async ({
       data: { organizationId, subscriptionId },
@@ -287,9 +292,7 @@ const cancelSubscription = createServerFn({ method: "POST" })
  * Authorization is enforced by better-auth restoreSubscription.
  */
 const restoreSubscription = createServerFn({ method: "POST" })
-  .inputValidator(
-    z.object({ organizationId: z.string(), subscriptionId: z.string() }),
-  )
+  .inputValidator(subscriptionActionSchema)
   .handler(
     async ({
       data: { organizationId, subscriptionId },

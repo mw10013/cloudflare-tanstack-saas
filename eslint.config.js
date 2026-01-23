@@ -9,6 +9,7 @@ import tseslint from "typescript-eslint";
 export default defineConfig(
   globalIgnores([
     "build/",
+    "dist/",
     ".wrangler/",
     "worker-configuration.d.ts",
     "refs/",

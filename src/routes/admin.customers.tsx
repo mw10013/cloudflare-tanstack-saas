@@ -52,7 +52,7 @@ export const getCustomers = createServerFn({ method: "GET" })
   });
 
 export const Route = createFileRoute("/admin/customers")({
-  validateSearch: (search) => customerSearchSchema.parse(search),
+  validateSearch: customerSearchSchema,
   loaderDeps: ({ search }) => ({ page: search.page, filter: search.filter }),
   loader: async ({ deps }) => {
     const result = await getCustomers({ data: deps });

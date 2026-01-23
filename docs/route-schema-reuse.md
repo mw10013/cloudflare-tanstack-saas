@@ -28,6 +28,21 @@ const form = useForm({
 });
 ```
 
+## validateSearch Shortcut
+
+`validateSearch` accepts any object with a `parse` method, so a Zod schema can be passed directly instead of wrapping with `(search) => schema.parse(search)`.
+
+```tsx
+const searchSchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  filter: z.string().trim().optional(),
+});
+
+export const Route = createFileRoute("/admin/subscriptions")({
+  validateSearch: searchSchema,
+});
+```
+
 ## Existing Examples
 
 - `src/routes/login.tsx:35` extracts `loginSchema` for input validation, mutation typing, and form validation.
@@ -36,12 +51,6 @@ const form = useForm({
 
 ## Candidates For Extraction
 
-- `src/routes/admin.users.tsx:66` and `src/routes/admin.users.tsx:91` duplicate the search schema used by `getUsers` and `Route.validateSearch`.
-- `src/routes/admin.users.tsx:113` and `src/routes/admin.users.tsx:124` duplicate the `{ userId }` schema used by `unbanUser` and `impersonateUser`.
-- `src/routes/admin.subscriptions.tsx:30` and `src/routes/admin.subscriptions.tsx:55` duplicate the search schema used by `getSubscriptions` and `Route.validateSearch`.
-- `src/routes/admin.customers.tsx:30` and `src/routes/admin.customers.tsx:55` duplicate the search schema used by `getCustomers` and `Route.validateSearch`.
-- `src/routes/admin.sessions.tsx:30` and `src/routes/admin.sessions.tsx:55` duplicate the search schema used by `getSessions` and `Route.validateSearch`.
-- `src/routes/app.$organizationId.billing.tsx:28` and `src/routes/app.$organizationId.billing.tsx:244` duplicate the `{ organizationId }` schema used by the loader and `manageBilling`.
-- `src/routes/app.$organizationId.billing.tsx:262` and `src/routes/app.$organizationId.billing.tsx:289` duplicate the `{ organizationId, subscriptionId }` schema used by `cancelSubscription` and `restoreSubscription`.
-- `src/routes/app.$organizationId.members.tsx:36` and `src/routes/app.$organizationId.members.tsx:100` duplicate the `{ organizationId }` schema used by the loader and `leaveOrganization`.
-- `src/routes/app.$organizationId.index.tsx:51` and `src/routes/app.$organizationId.index.tsx:61` duplicate the `{ invitationId }` schema used by `acceptInvitation` and `rejectInvitation`.
+- `src/routes/app.$organizationId.members.tsx:77` and `src/routes/app.$organizationId.members.tsx:113` repeat the `{ organizationId, memberId, role }` schema used by `removeMember` and `updateMemberRole`.
+- `src/routes/app.$organizationId.invitations.tsx:49` and `src/routes/app.$organizationId.invitations.tsx:306` inline small `z.object(...)` schemas that could be shared if they need to be referenced in multiple places.
+- `src/routes/_mkt.pricing.tsx:32` includes a small `{ intent }` schema that could be extracted if reused by future form validators.

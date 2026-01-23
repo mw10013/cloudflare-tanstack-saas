@@ -27,13 +27,13 @@ import {
 
 const LIMIT = 20;
 
+const subscriptionSearchSchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  filter: z.string().trim().optional(),
+});
+
 export const getSubscriptions = createServerFn({ method: "GET" })
-  .inputValidator(
-    z.object({
-      page: z.coerce.number().int().min(1).default(1),
-      filter: z.string().trim().optional(),
-    }),
-  )
+  .inputValidator(subscriptionSearchSchema)
   .handler(async ({ data, context: { repository } }) => {
     const { page, filter } = data;
     const offset = (page - 1) * LIMIT;
@@ -52,13 +52,7 @@ export const getSubscriptions = createServerFn({ method: "GET" })
   });
 
 export const Route = createFileRoute("/admin/subscriptions")({
-  validateSearch: (search) => {
-    const schema = z.object({
-      page: z.coerce.number().int().min(1).default(1),
-      filter: z.string().trim().optional(),
-    });
-    return schema.parse(search);
-  },
+  validateSearch: subscriptionSearchSchema,
   loaderDeps: ({ search }) => ({ page: search.page, filter: search.filter }),
   loader: async ({ deps }) => {
     const result = await getSubscriptions({ data: deps });

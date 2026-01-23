@@ -24,13 +24,17 @@ import {
   ItemTitle,
 } from "@/components/ui/item";
 
+const organizationIdSchema = z.object({ organizationId: z.string() });
+
+const invitationIdSchema = z.object({ invitationId: z.string() });
+
 export const Route = createFileRoute("/app/$organizationId/")({
   loader: ({ params: data }) => getLoaderData({ data }),
   component: RouteComponent,
 });
 
 const getLoaderData = createServerFn({ method: "GET" })
-  .inputValidator(z.object({ organizationId: z.string() }))
+  .inputValidator(organizationIdSchema)
   .handler(
     async ({
       data: { organizationId },
@@ -49,7 +53,7 @@ const getLoaderData = createServerFn({ method: "GET" })
   );
 
 const acceptInvitation = createServerFn({ method: "POST" })
-  .inputValidator(z.object({ invitationId: z.string() }))
+  .inputValidator(invitationIdSchema)
   .handler(async ({ data: { invitationId }, context: { authService } }) => {
     const request = getRequest();
     await authService.api.acceptInvitation({
@@ -59,7 +63,7 @@ const acceptInvitation = createServerFn({ method: "POST" })
   });
 
 const rejectInvitation = createServerFn({ method: "POST" })
-  .inputValidator(z.object({ invitationId: z.string() }))
+  .inputValidator(invitationIdSchema)
   .handler(async ({ data: { invitationId }, context: { authService } }) => {
     const request = getRequest();
     await authService.api.rejectInvitation({
