@@ -13,7 +13,8 @@
     "ENVIRONMENT": "local",
     "DEMO_MODE": "true",
     "TRANSACTIONAL_EMAIL": "noreply@example.com",
-    "BETTER_AUTH_URL": "http://localhost:3000"
+    "BETTER_AUTH_URL": "http://localhost:3000",
+    "ANALYTICS_TOKEN": ""
   },
   "observability": {
     "enabled": true
