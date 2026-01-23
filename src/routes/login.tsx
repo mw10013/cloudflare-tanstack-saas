@@ -32,14 +32,14 @@ const getLoaderData = createServerFn({ method: "GET" }).handler(
   ({ context: { env } }) => ({ isDemoMode: env.DEMO_MODE === "true" }),
 );
 
+const loginSchema = z.object({
+  email: z.email(),
+});
+
 export const login = createServerFn({
   method: "POST",
 })
-  .inputValidator(
-    z.object({
-      email: z.email(),
-    }),
-  )
+  .inputValidator(loginSchema)
   .handler(async ({ data, context: { authService, env } }) => {
     const request = getRequest();
     const result = await authService.api.signInMagicLink({
@@ -63,16 +63,14 @@ function RouteComponent() {
   const isHydrated = useHydrated();
   const loginServerFn = useServerFn(login);
   const loginMutation = useMutation({
-    mutationFn: (data: { email: string }) => loginServerFn({ data }),
+    mutationFn: (data: z.input<typeof loginSchema>) => loginServerFn({ data }),
   });
   const form = useForm({
     defaultValues: {
       email: "",
     },
     validators: {
-      onSubmit: z.object({
-        email: z.email(),
-      }),
+      onSubmit: loginSchema,
     },
     onSubmit: ({ value }) => {
       console.log(`onSubmit: value: ${JSON.stringify(value)}`);
