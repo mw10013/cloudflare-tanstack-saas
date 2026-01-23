@@ -14,26 +14,40 @@ Add Cloudflare Web Analytics to the app in a TanStack Start-friendly way. The be
 
 1. **Server access to env**
    - Create a `createServerFn` in `src/routes/__root.tsx`.
-   - Read `context.env.ANALYTICS_TOKEN` and return a boolean plus the token string (or `null`).
+   - Read `context.env.ANALYTICS_TOKEN` and return a `string` (empty string when unset).
 
-2. **Expose to root route context**
-   - Use `beforeLoad` on the root route to call the server function.
-   - Merge the returned analytics data into the root route context so it is available to the shell.
+2. **Expose to root route**
+   - Use `loader` on the root route to call the server function.
+   - Read `Route.useLoaderData()` in the shell to access the token.
 
 3. **Conditional script injection**
-   - In `RootDocument`, only render the beacon script if the token is non-empty.
+   - In `RootDocument`, only render the beacon script when the token is non-empty.
    - Use the token in `data-cf-beacon`.
+
+## Return Shape Trade-offs
+
+- **`string` only (recommended)**
+  - Pros: simplest API, no extra fields, empty string is a clear “off” signal.
+  - Cons: consumers must treat empty string as disabled and avoid accidental usage.
+
+- **`boolean` + `string`**
+  - Pros: explicit enable flag can be clearer when multiple analytics vendors exist.
+  - Cons: redundant state and risk of mismatched values.
+
+**Recommendation:** return only the token string and treat an empty string as “analytics disabled.”
 
 ## Cloudflare Web Analytics Script
 
 Cloudflare’s standard beacon script:
 
 ```html
+<!-- Cloudflare Web Analytics -->
 <script
   defer
   src="https://static.cloudflareinsights.com/beacon.min.js"
   data-cf-beacon='{"token": "<ANALYTICS_TOKEN>"}'
 ></script>
+<!-- End Cloudflare Web Analytics -->
 ```
 
 ## Proposed Implementation Outline
