@@ -19,7 +19,7 @@
 
 - TanStack: Start, Router, Query, Form
 - Cloudflare: D1 with read replication, KV, Cron, Rate Limiting
-- Better Auth: Magic link, Admin, Organization, Stripe
+- Better Auth: Magic link, Admin, Organization, Stripe, D1 Database Adapter
 - UI: Shadcn on Base UI 
 - Testing: Vitest, Playwright
 
