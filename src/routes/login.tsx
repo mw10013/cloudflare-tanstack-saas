@@ -24,16 +24,26 @@ import { Input } from "@/components/ui/input";
 
 export const Route = createFileRoute("/login")({
   component: RouteComponent,
+  loader: () => getLoaderData(),
 });
 
-const loginSchema = z.object({
-  email: z.email(),
-});
+const getLoaderData = createServerFn({ method: "GET" }).handler(
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  ({ context: { env } }) => ({ isDemoMode: env.DEMO_MODE === "true" }),
+);
+
+interface LoginInput {
+  email: string;
+}
 
 export const login = createServerFn({
   method: "POST",
 })
-  .inputValidator(loginSchema)
+  .inputValidator(
+    z.object({
+      email: z.email(),
+    }),
+  )
   .handler(async ({ data, context: { authService, env } }) => {
     const request = getRequest();
     const result = await authService.api.signInMagicLink({
@@ -53,17 +63,20 @@ export const login = createServerFn({
   });
 
 function RouteComponent() {
+  const { isDemoMode } = Route.useLoaderData();
   const isHydrated = useHydrated();
   const loginServerFn = useServerFn(login);
   const loginMutation = useMutation({
-    mutationFn: (data: z.input<typeof loginSchema>) => loginServerFn({ data }),
+    mutationFn: (data: LoginInput) => loginServerFn({ data }),
   });
   const form = useForm({
     defaultValues: {
       email: "",
     },
     validators: {
-      onSubmit: loginSchema,
+      onSubmit: z.object({
+        email: z.email(),
+      }),
     },
     onSubmit: ({ value }) => {
       console.log(`onSubmit: value: ${JSON.stringify(value)}`);
@@ -100,7 +113,9 @@ function RouteComponent() {
         <CardHeader>
           <CardTitle>Sign in / Sign up</CardTitle>
           <CardDescription>
-            Enter your email to receive a magic sign-in link
+            {isDemoMode
+              ? "DEMO MODE: no transactional emails. Use fake email or a@a.com for admin."
+              : "Enter your email to receive a magic sign-in link"}
           </CardDescription>
         </CardHeader>
         <CardContent>
