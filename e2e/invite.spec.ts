@@ -4,8 +4,6 @@ import { expect, test } from "@playwright/test";
 import { scopeEmail } from "./utils";
 
 test.describe("invite", () => {
-  test.describe.configure({ mode: "serial" });
-
   const users: {
     email: string;
     invitees: { email: string; action?: "accept" | "reject" }[];
@@ -111,8 +109,6 @@ test.describe("invite", () => {
 });
 
 test.describe("admin invite", () => {
-  test.describe.configure({ mode: "serial" });
-
   const adminInviteScenario = {
     ownerEmail: scopeEmail("invite-admin-owner@e2e.com"),
     adminEmail: scopeEmail("invite-admin-admin@e2e.com"),
