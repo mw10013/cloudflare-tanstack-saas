@@ -23,18 +23,14 @@ import {
 import { Input } from "@/components/ui/input";
 
 export const Route = createFileRoute("/login")({
-  component: RouteComponent,
   loader: () => getLoaderData(),
+  component: RouteComponent,
 });
 
 const getLoaderData = createServerFn({ method: "GET" }).handler(
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   ({ context: { env } }) => ({ isDemoMode: env.DEMO_MODE === "true" }),
 );
-
-interface LoginInput {
-  email: string;
-}
 
 export const login = createServerFn({
   method: "POST",
@@ -67,7 +63,7 @@ function RouteComponent() {
   const isHydrated = useHydrated();
   const loginServerFn = useServerFn(login);
   const loginMutation = useMutation({
-    mutationFn: (data: LoginInput) => loginServerFn({ data }),
+    mutationFn: (data: { email: string }) => loginServerFn({ data }),
   });
   const form = useForm({
     defaultValues: {
