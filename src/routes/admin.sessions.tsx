@@ -27,13 +27,13 @@ import {
 
 const LIMIT = 10;
 
+const sessionSearchSchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  filter: z.string().trim().optional(),
+});
+
 export const getSessions = createServerFn({ method: "GET" })
-  .inputValidator(
-    z.object({
-      page: z.coerce.number().int().min(1).default(1),
-      filter: z.string().trim().optional(),
-    }),
-  )
+  .inputValidator(sessionSearchSchema)
   .handler(async ({ data, context: { repository } }) => {
     const { page, filter } = data;
     const offset = (page - 1) * LIMIT;
@@ -52,13 +52,7 @@ export const getSessions = createServerFn({ method: "GET" })
   });
 
 export const Route = createFileRoute("/admin/sessions")({
-  validateSearch: (search) => {
-    const schema = z.object({
-      page: z.coerce.number().int().min(1).default(1),
-      filter: z.string().trim().optional(),
-    });
-    return schema.parse(search);
-  },
+  validateSearch: (search) => sessionSearchSchema.parse(search),
   loaderDeps: ({ search }) => ({ page: search.page, filter: search.filter }),
   loader: async ({ deps }) => {
     const result = await getSessions({ data: deps });

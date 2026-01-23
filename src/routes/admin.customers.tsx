@@ -27,13 +27,13 @@ import {
 
 const LIMIT = 10;
 
+const customerSearchSchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  filter: z.string().trim().optional(),
+});
+
 export const getCustomers = createServerFn({ method: "GET" })
-  .inputValidator(
-    z.object({
-      page: z.coerce.number().int().min(1).default(1),
-      filter: z.string().trim().optional(),
-    }),
-  )
+  .inputValidator(customerSearchSchema)
   .handler(async ({ data, context: { repository } }) => {
     const { page, filter } = data;
     const offset = (page - 1) * LIMIT;
@@ -52,13 +52,7 @@ export const getCustomers = createServerFn({ method: "GET" })
   });
 
 export const Route = createFileRoute("/admin/customers")({
-  validateSearch: (search) => {
-    const schema = z.object({
-      page: z.coerce.number().int().min(1).default(1),
-      filter: z.string().trim().optional(),
-    });
-    return schema.parse(search);
-  },
+  validateSearch: (search) => customerSearchSchema.parse(search),
   loaderDeps: ({ search }) => ({ page: search.page, filter: search.filter }),
   loader: async ({ deps }) => {
     const result = await getCustomers({ data: deps });
