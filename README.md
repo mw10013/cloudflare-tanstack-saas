@@ -18,7 +18,7 @@
 ## Stack
 
 - TanStack: Start, Router, Query, Form
-- Cloudflare: D1 with read replication, KV, Cron, Rate Limiting
+- Cloudflare: D1 with read replication, KV, Cron, Rate Limiting, Web Analytics
 - Better Auth: Magic link, Admin, Organization, Stripe, D1 Database Adapter
 - UI: Shadcn on Base UI 
 - Testing: Vitest, Playwright
@@ -120,11 +120,15 @@ pnpm test:e2e
   - Endpoint URL: `https://[DOMAIN]/api/auth/stripe/webhook`
   - Events: `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`
 
+- Cloudflare Web Analytics | Add a site
+  - Remember token from script for ANALYTICS_TOKEN secret below.
+
 - pnpm exec wrangler kv namespace create tcs-kv-production
 - Update wrangler.jsonc production kv_namespaces
 - pnpm d1:reset:PRODUCTION
 - pnpm deploy:PRODUCTION
 - pnpm exec wrangler secret put SECRET --env production
+  - BETTER_AUTH_SECRET, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, ANALYTICS_TOKEN
 - Workers & Pages Settings: tcs
   - Git repository: connect to git repo
   - Build configuration
