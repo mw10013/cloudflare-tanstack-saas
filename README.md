@@ -1,3 +1,71 @@
+<h1 align="center">
+<code>TanStack Cloudflare SaaS</code>
+</h1>
+
+<div align="center">
+  <p>
+  Lightweight saas template packed with essential functionality for TanStack and Cloudflare
+  </p>
+  <p>
+  TanStack • Cloudflare • Better Auth • Stripe • Shadcn on Base UI
+  </p>
+  <p>
+    <a href="https://tcs.devxo.workers.dev/">Demo</a>
+  </p>
+
+</div>
+
+## Stack
+
+- TanStack: Start, Router, Query, Form
+- Cloudflare: D1 with read replication, KV, Cron, Rate Limiting
+- Better Auth: Magic link, Admin, Organization, Stripe
+- UI: Shadcn on Base UI 
+- Testing: Vitest, Playwright
+
+## Template Functionality
+
+- **Authentication & Organizations:**
+  - Magic link authentication using Better Auth
+  - Multi-tenant organization management with automatic organization creation
+  - Role-based access control (user/admin/organization member roles)
+  - Organization invitations and membership management
+
+- **Payments & Subscriptions:**
+  - Stripe integration with subscription processing
+  - Monthly and annual pricing plans with configurable trial periods
+  - Stripe Checkout and Customer Portal integration
+  - Webhook handling for subscription lifecycle events
+  - Subscription management (cancel, reactivate, billing portal access)
+
+- **Database & Data Management:**
+  - Cloudflare D1 (SQLite) database with read replication and schema migrations
+  - Type-safe database operations with Zod schema validation
+  - Session management with automatic cleanup of expired sessions
+  - Database seeding utilities for development and testing
+
+- **Admin Panel:**
+  - Admin interface for user management
+  - Session monitoring and administration
+  - Customer and subscription oversight
+
+- **UI/UX Components:**
+  - Shadcn with Base UI and TanStack Form integration
+  - Theme switching (light/dark/system) with persistence
+
+- **Testing Infrastructure:**
+  - Unit and integration tests using Vitest
+  - End-to-end testing with Playwright
+
+- **Email Integration:**
+  - AWS SES for transactional email delivery
+  - Demo mode support for development without external email services
+
+- **Security & Performance:**
+  - IP-based rate limiting for authentication endpoints using Cloudflare Rate Limiting
+  - Server-side route protection and authorization
+  - Secure session handling with database storage
+  
 ## Quick Start
 
 ### Stripe
