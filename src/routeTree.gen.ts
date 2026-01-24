@@ -134,6 +134,7 @@ const ApiE2eDeleteUserEmailRoute = ApiE2eDeleteUserEmailRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/': typeof MktIndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
@@ -144,7 +145,6 @@ export interface FileRoutesByFullPath {
   '/admin/subscriptions': typeof AdminSubscriptionsRoute
   '/admin/users': typeof AdminUsersRoute
   '/app/$organizationId': typeof AppOrganizationIdRouteWithChildren
-  '/': typeof MktIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -198,6 +198,7 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/'
     | '/admin'
     | '/app'
     | '/login'
@@ -208,7 +209,6 @@ export interface FileRouteTypes {
     | '/admin/subscriptions'
     | '/admin/users'
     | '/app/$organizationId'
-    | '/'
     | '/admin/'
     | '/app/'
     | '/api/auth/$'
@@ -302,7 +302,7 @@ declare module '@tanstack/react-router' {
     '/_mkt': {
       id: '/_mkt'
       path: ''
-      fullPath: ''
+      fullPath: '/'
       preLoaderRoute: typeof MktRouteImport
       parentRoute: typeof rootRouteImport
     }
