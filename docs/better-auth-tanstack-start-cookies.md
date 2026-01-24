@@ -32,7 +32,7 @@ const { headers } = await auth.api.signUpEmail({
 
 ## Better Auth plugin behavior
 
-The `tanstackStartCookies` plugin listens to response headers after an auth call, parses the `set-cookie` header, and then uses TanStack Start's `setCookie` helper to write the cookies.
+The `tanstackStartCookies` plugin listens to response headers after an auth call, parses the `set-cookie` header, and then uses TanStack Start's `setCookie` helper to write the cookies. This is the "magic" part: `setCookie` writes into TanStack Start's internal response cookie store so the framework can merge cookies into whatever response it ultimately sends (including redirects).
 
 ```ts
 const returned = ctx.context.responseHeaders;
@@ -69,6 +69,34 @@ export const signOutServerFn = createServerFn({ method: "POST" }).handler(
   },
 );
 ```
+
+If we enabled `tanstackStartCookies`, we could drop the explicit `headers` in the redirect and rely on `setCookie` to populate the internal response cookie store:
+
+```ts
+const { response } = await authService.api.signOut({
+  headers: request.headers,
+  returnHeaders: true,
+});
+throw redirect({ to: "/" });
+```
+
+## Return headers are required for the plugin
+
+The plugin reads cookies from `ctx.context.responseHeaders`, which is populated when Better Auth executes the endpoint and stores the response headers for after hooks:
+
+```ts
+internalContext.context.responseHeaders = result.headers;
+const after = await runAfterHooks(internalContext, afterHooks);
+```
+
+The `tanstackStartCookies` hook then pulls `set-cookie` from that `responseHeaders` field:
+
+```ts
+const returned = ctx.context.responseHeaders;
+const setCookies = returned?.get("set-cookie");
+```
+
+In practice, this means you must allow Better Auth to return headers. For `auth.api.*` calls, that requires `returnHeaders: true`; otherwise the caller never receives headers and the plugin won't see any `set-cookie` values to bridge.
 
 ## Trade-offs
 
