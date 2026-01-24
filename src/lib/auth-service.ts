@@ -7,6 +7,7 @@ import { getRequest } from "@tanstack/react-start/server";
 import { betterAuth } from "better-auth";
 import { createAuthMiddleware } from "better-auth/api";
 import { admin, magicLink, organization } from "better-auth/plugins";
+import { tanstackStartCookies } from "better-auth/tanstack-start";
 import { d1Adapter } from "@/lib/d1-adapter";
 
 export type AuthService = ReturnType<typeof createAuthService>;
@@ -244,6 +245,8 @@ function createBetterAuthOptions({
           return Promise.resolve();
         },
       }),
+      // Must be last so it sees final response headers.
+      tanstackStartCookies(),
     ],
   } satisfies BetterAuthOptions;
 }
@@ -288,14 +291,12 @@ export function createAuthService(
 export const signOutServerFn = createServerFn({ method: "POST" }).handler(
   async ({ context: { authService } }) => {
     const request = getRequest();
-    const { headers } = await authService.api.signOut({
+    await authService.api.signOut({
       headers: request.headers,
-      returnHeaders: true,
     });
     // eslint-disable-next-line @typescript-eslint/only-throw-error
     throw redirect({
       to: "/",
-      headers,
     });
   },
 );

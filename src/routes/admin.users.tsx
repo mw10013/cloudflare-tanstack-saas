@@ -121,13 +121,12 @@ export const impersonateUser = createServerFn({ method: "POST" })
   .inputValidator(userIdSchema)
   .handler(async ({ data, context: { authService } }) => {
     const request = getRequest();
-    const { headers } = await authService.api.impersonateUser({
-      returnHeaders: true,
+    await authService.api.impersonateUser({
       headers: request.headers,
       body: { userId: data.userId },
     });
     // eslint-disable-next-line @typescript-eslint/only-throw-error
-    throw redirect({ to: "/app", headers });
+    throw redirect({ to: "/app" });
   });
 
 function RouteComponent() {

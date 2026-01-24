@@ -2,11 +2,11 @@
 
 ## Summary
 
-We currently do not use the `tanstackStartCookies` plugin, but session cookies still work because we explicitly forward `Set-Cookie` headers returned by Better Auth.
+We now use the `tanstackStartCookies` plugin. Session cookies are written via TanStack Start's internal response cookie store, so we no longer manually forward `Set-Cookie` headers in server function redirects.
 
 ## Better Auth guidance
 
-The TanStack Start integration docs call out the cookie plugin for server-side calls like `auth.api.signInEmail`, because TanStack Start needs help bridging `Set-Cookie` response headers into its cookie API. That example is intended to run in a server function or loader, not in the browser.
+The TanStack Start integration docs call out the cookie plugin for server-side calls like `auth.api.signInEmail`, because TanStack Start needs help bridging `Set-Cookie` response headers into its cookie API. That example is intended to run in a server function or loader, not in the browser. The plugin should remain last in the plugin array so it can see the final response headers.
 
 ```ts
 import { betterAuth } from "better-auth";
@@ -50,34 +50,22 @@ parsed.forEach((value, key) => {
 });
 ```
 
-## What our code does instead
+## Current approach in this codebase
 
-We call Better Auth and forward the returned headers through a TanStack Start redirect. That means `Set-Cookie` reaches the client without needing the plugin.
+We rely on `tanstackStartCookies` to populate the internal response cookie store, so server functions no longer need to forward `Set-Cookie` headers.
 
 ```ts
 export const signOutServerFn = createServerFn({ method: "POST" }).handler(
   async ({ context: { authService } }) => {
     const request = getRequest();
-    const { headers } = await authService.api.signOut({
+    await authService.api.signOut({
       headers: request.headers,
-      returnHeaders: true,
     });
     throw redirect({
       to: "/",
-      headers,
     });
   },
 );
-```
-
-If we enabled `tanstackStartCookies`, we could drop the explicit `headers` in the redirect and rely on `setCookie` to populate the internal response cookie store:
-
-```ts
-const { response } = await authService.api.signOut({
-  headers: request.headers,
-  returnHeaders: true,
-});
-throw redirect({ to: "/" });
 ```
 
 ## Where the plugin gets headers
@@ -100,18 +88,16 @@ const setCookies = returned?.get("set-cookie");
 
 ## Codebase scan: where cookies are actually set
 
-Only two app-layer call sites request `returnHeaders: true`, and they both match operations that set or clear session cookies:
+Two app-layer call sites set or clear session cookies, so they now rely on the plugin to bridge cookies into the response store:
 
 ```ts
-const { headers } = await authService.api.signOut({
+await authService.api.signOut({
   headers: request.headers,
-  returnHeaders: true,
 });
 ```
 
 ```ts
-const { headers } = await authService.api.impersonateUser({
-  returnHeaders: true,
+await authService.api.impersonateUser({
   headers: request.headers,
   body: { userId: data.userId },
 });
@@ -160,4 +146,4 @@ await setSessionCookie(
 
 ## Recommendation
 
-Keep the current approach while auth calls stay limited and headers are consistently forwarded. If more server-side `auth.api.*` usage is planned or the team wants safer defaults, add `tanstackStartCookies` to reduce the risk of missing cookie propagation.
+Keep `tanstackStartCookies` enabled so cookie writes are automatically merged into TanStack Start responses. Reserve `returnHeaders: true` for cases where you explicitly need to forward headers to a custom `Response`.
